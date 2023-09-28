@@ -1,0 +1,19 @@
+    1   2   3   4   5   6   7  
+  ┌───┬───┬───┬───┬───┬───┬───┐ Estados.VACIO ->  
+A │ P │ P │ P │ P │ P │   │   │ Estados.AGUA -> ~
+  ├───┼───┼───┼───┼───┼───┼───┤ Estados.AGUA_IMP -> ~*
+B │   │   │   │   │   │   │   │ Estados.PORTAAVIONES -> P
+  ├───┼───┼───┼───┼───┼───┼───┤ Estados.PORTAAVIONES_IMP -> P*
+C │   │   │   │   │   │ F │   │ Estados.SUBMARINO -> S
+  ├───┼───┼───┼───┼───┼───┼───┤ Estados.SUBMARINO_IMP -> S*
+D │   │   │   │   │   │ F │   │ Estados.FRAGATA -> F
+  ├───┼───┼───┼───┼───┼───┼───┤ Estados.FRAGATA_IMP -> F*
+E │   │ S │   │   │   │   │   │
+  ├───┼───┼───┼───┼───┼───┼───┤
+F │   │ S │   │ F │ F │   │   │
+  ├───┼───┼───┼───┼───┼───┼───┤
+G │   │ S │   │   │   │   │   │
+  └───┴───┴───┴───┴───┴───┴───┘
+
+a1 (00) | e2 (40) | c6 (25) | f4 (53)
+a5 (04) | g2 (60) | d6 (25) | f5 (54)
