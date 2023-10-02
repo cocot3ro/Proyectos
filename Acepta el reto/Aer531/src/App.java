@@ -5,16 +5,22 @@ public class App {
         Scanner sc = new Scanner(System.in);
 
         while (sc.hasNext()) {
-            sc.nextInt();
-            sc.nextInt();
+            int replicantesAnalizados = sc.nextInt();
+            int replicantesIncorrectos = sc.nextInt();
             int humanosAnalizados = sc.nextInt();
             int humanosIncorrectos = sc.nextInt();
-            sc.nextInt();
-            sc.nextInt();
+            int humanosEstimados = sc.nextInt();
+            int replicantesEstimados = sc.nextInt();
 
-            double tasaErrorHumanos = (double) humanosIncorrectos / humanosAnalizados;
+            double probHumano = (double) humanosIncorrectos / humanosAnalizados;
+            double probReplicante = (double) replicantesIncorrectos / replicantesAnalizados;
 
-            if (tasaErrorHumanos < 0.10) {
+            double A = replicantesEstimados - (replicantesEstimados * probReplicante);
+            double H = humanosEstimados * probHumano;
+
+            double res = A / (A + H);
+
+            if (res >= 0.9) {
                 System.out.println("APRUEBA");
             } else {
                 System.out.println("SUSPENDE");
