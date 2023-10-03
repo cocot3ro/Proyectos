@@ -4,7 +4,8 @@ public class Solution {
 
         for (int i = 0, j = s.length(); i < s.length(); i++) {
             if (Character.isLetter(s.charAt(i))) {
-                sb.append(s.charAt(nextIndex(s, j)));
+                j = nextIndex(s, j);
+                sb.append(s.charAt(j));
             } else {
                 sb.append(s.charAt(i));
             }
@@ -14,7 +15,12 @@ public class Solution {
     }
 
     private int nextIndex(String s, int currIndex) {
-        while (!Character.isLetter(s.charAt(--currIndex)));
-        return currIndex;
+        int i;
+        for (i = currIndex - 1; i >= 0; i--) {
+            if (Character.isLetter(s.charAt(i))) {
+                break;
+            }
+        }
+        return i;
     }
 }
