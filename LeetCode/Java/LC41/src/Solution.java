@@ -14,8 +14,6 @@ public class Solution {
             set.add(nums[i]);
         }
 
-        System.out.println(set);
-
         int expected = 1;
         for (Integer i : set) {
             if (i != expected) {
