@@ -5,11 +5,14 @@ public class PicrossTouchApp {
 
         boolean[][] solvedBoard = PicrossTouchSolver.solve(colConstraints, rowConstraints);
 
+        System.out.println("SOLUTION");
+        System.out.println("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
         for (boolean[] row : solvedBoard) {
             for (boolean b : row) {
-                System.out.print((b ? 1 : 0) + " ");
+                System.out.print((b ? 1 : ".") + " ");
             }
             System.out.println();
         }
+        System.out.println("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
     }
 }

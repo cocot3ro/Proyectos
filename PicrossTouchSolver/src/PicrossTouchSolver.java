@@ -1,58 +1,96 @@
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.LinkedList;
+import java.util.List;
 
 public class PicrossTouchSolver {
     private final int[][] colConstraints;
     private final int[][] rowConstraints;
     private final boolean[][] board;
-    private final boolean[][] unmodifiables;
-    private int rowSize;
-    private int colSize;
+    private final List<List<boolean[]>> allPossibilities;
+    private boolean solved;
 
     private PicrossTouchSolver(int[][] colConstraints, int[][] rowConstraints) {
         this.colConstraints = colConstraints;
         this.rowConstraints = rowConstraints;
         this.board = new boolean[rowConstraints.length][colConstraints.length];
-        this.unmodifiables = new boolean[rowConstraints.length][colConstraints.length];
-        this.rowSize = colConstraints.length;
-        this.colSize = rowConstraints.length;
-
-        markUnmodifiables(true);
-        computeSizes();
-        putConstants();
-        markUnmodifiables(false);
-
-        recursive(0);
+        this.allPossibilities = generateArrays(colConstraints, rowConstraints.length);
+        solve(0);
     }
 
     public static boolean[][] solve(int[][] colConstraints, int[][] rowConstraints) {
-        PicrossTouchSolver solved = new PicrossTouchSolver(colConstraints, rowConstraints);
-        return solved.board;
+        return new PicrossTouchSolver(colConstraints, rowConstraints).board;
     }
 
-    private boolean recursive(int idx) {
-        if (isUnmodifiableCol(idx) && idx + 1 < board[0].length) {
-            return recursive(idx + 1);
+    private void solve(int idx) {
+        if (idx == allPossibilities.size()) {
+            this.solved = isValid();
+            return;
+        }
+        //FIXME
+        // Tarda moito
+        // marcar casillas constantes, descartar posibilidades que non encaixen
+        for (boolean[] possibility : allPossibilities.get(idx)) {
+            if (this.solved) {
+                return;
+            }
+            applyPossibility(idx, possibility);
+            solve(idx + 1);
+        }
+    }
+
+    private void applyPossibility(int col, boolean[] possibility) {
+        for (int i = 0; i < rowConstraints.length; i++) {
+            board[i][col] = possibility[i];
+        }
+    }
+
+    private List<List<boolean[]>> generateArrays(int[][] colConstraints, int size) {
+        List<List<boolean[]>> allPossibilities = new LinkedList<>();
+
+        for(int[] colConstraint : colConstraints) {
+            allPossibilities.add(generateArrays(colConstraint, size));
         }
 
-        //TODO:
-        // sacar todas as posibilidades da columna (espacios = sum(colConstraint[i]) - board.length)
-        // probar a primeira, if idx dentro de tablero && recursive
-
-        return false;
+        return allPossibilities;
     }
 
-    private boolean isUnmodifiableCol(int col) {
+    private List<boolean[]> generateArrays(int[] blocks, int size) {
+        List<boolean[]> result = new ArrayList<>();
+        boolean[] currentArray = new boolean[size];
+        generateArraysHelper(result, currentArray, blocks, 0, 0);
+        return result;
+    }
+
+    private void generateArraysHelper(List<boolean[]> result, boolean[] currentArray, int[] blocks, int blockIndex, int startIndex) {
+        if (blockIndex == blocks.length) {
+            result.add(Arrays.copyOf(currentArray, currentArray.length));
+            return;
+        }
+
+        for (int i = startIndex; i <= currentArray.length - blocks[blockIndex]; i++) {
+            for (int j = i; j < i + blocks[blockIndex]; j++) {
+                currentArray[j] = true;
+            }
+
+            generateArraysHelper(result, currentArray, blocks, blockIndex + 1, i + blocks[blockIndex] + 1);
+
+            for (int j = i; j < i + blocks[blockIndex]; j++) {
+                currentArray[j] = false;
+            }
+        }
+    }
+
+    /*private boolean isUnmodifiableCol(int col) {
         for (int i = 0; i < board.length; i++) {
             if (!unmodifiables[i][col]) {
                 return false;
             }
         }
         return true;
-    }
+    }*/
 
-    private void markUnmodifiables(boolean b) {
+    /*private void markUnmodifiables(boolean b) {
         if (b) {
             for (int i = 0; i < colConstraints.length; i++) {
                 if (colConstraints[i][0] == 0) {
@@ -79,21 +117,21 @@ public class PicrossTouchSolver {
                 }
             }
         }
-    }
+    }*/
 
-    private void markUnmodifiableRow(int row) {
+    /*private void markUnmodifiableRow(int row) {
         for (int i = 0; i < board[row].length; i++) {
             unmodifiables[row][i] = true;
         }
-    }
+    }*/
     
-    private void markUnmodifiableCol(int col) {
+    /*private void markUnmodifiableCol(int col) {
         for (int i = 0; i < board.length; i++) {
             unmodifiables[i][col] = true;
         }
-    }
+    }*/
 
-    private void computeSizes() {
+    /*private void computeSizes() {
         for (int[] colConstraint : colConstraints) {
             if (colConstraint[0] == 0) {
                 this.rowSize--;
@@ -125,9 +163,9 @@ public class PicrossTouchSolver {
                 break;
             }
         }
-    }
+    }*/
 
-    private void putConstants() {
+    /*private void putConstants() {
         int offset = 0;
         for (int[] rowConstraint : rowConstraints) {
             if (rowConstraint[0] == 0) {
@@ -177,7 +215,7 @@ public class PicrossTouchSolver {
                 }
             }
         }
-    }
+    }*/
 
     private int sum(int[] arr) {
         int sum = 0;
@@ -205,11 +243,18 @@ public class PicrossTouchSolver {
         int[] expected = rowConstraints[row];
         int[] result = new int[expected.length];
 
-        for (int i = 0, idx = 0; i < board[row].length && idx < result.length; i++) {
+        boolean b = false;
+        for (int i = 0, idx = 0; i < board[row].length; i++) {
             if (board[row][i]) {
-                result[idx]++;
-            } else {
+                try {
+                    result[idx]++;
+                } catch (IndexOutOfBoundsException ex) {
+                    return false;
+                }
+                b = true;
+            } else if (b) {
                 idx++;
+                b = false;
             }
         }
 
@@ -220,11 +265,18 @@ public class PicrossTouchSolver {
         int[] expected = colConstraints[col];
         int[] result = new int[expected.length];
 
-        for (int i = 0, idx = 0; i < board.length && idx < result.length; i++) {
+        boolean b = false;
+        for (int i = 0, idx = 0; i < board.length; i++) {
             boolean[] row = board[i];
             if (row[col]) {
-                result[idx]++;
-            } else {
+                try {
+                    result[idx]++;
+                } catch (IndexOutOfBoundsException ex) {
+                    return false;
+                }
+                b = true;
+            } else if (b) {
+                b = false;
                 idx++;
             }
         }
