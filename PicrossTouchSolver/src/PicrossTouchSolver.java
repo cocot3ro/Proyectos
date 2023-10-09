@@ -19,8 +19,12 @@ public class PicrossTouchSolver {
         markUnmodifiables();
         computeSizes();
         putConstants();
-
         //recursive(0);
+    }
+
+    public static boolean[][] solve(int[][] colConstraints, int[][] rowConstraints) {
+        PicrossTouchSolver solved = new PicrossTouchSolver(colConstraints, rowConstraints);
+        return solved.board;
     }
 
     private void markUnmodifiables() {
@@ -76,33 +80,55 @@ public class PicrossTouchSolver {
     }
 
     private void putConstants() {
-        for (int i = 0, offset = 0; i < colConstraints.length; i++) {
-            while (unmodifiables[i][0]) {
+        int offset = 0;
+        for (int[] rowConstraint : rowConstraints) {
+            if (rowConstraint[0] == 0) {
                 offset++;
-            }
-            if (colSize == colConstraints[i][0]) {
-                for (int j = 0; j < colSize; j++) {
-                    board[j + offset][i] = true;
-                }
-            } else if (colSize == sum(colConstraints[i])) {
-
+            } else {
+                break;
             }
         }
-
-        for (int i = 0, offset = 0; i < rowConstraints.length; i++) {
-            if (rowSize == rowConstraints[i][0]) {
-                for (int j = 0; j < rowSize; j++) {
-                    if (unmodifiables[i][j + offset]) {
-                        j--;
-                        offset++;
-                    } else {
-                        board[i][j + offset] = true;
+        for (int i = 0; i < colConstraints.length; i++) {
+            if (colSize == colConstraints[i][0]) {
+                for (int j = offset; j < colSize + offset; j++) {
+                    board[j][i] = true;
+                }
+            } else if (colSize == sum(colConstraints[i])) {
+                for (int j = offset, k = 0, l = 0; l < colConstraints.length && j < colSize + offset; j++) {
+                    board[j][i] = true;
+                    if (++k == colConstraints[i][l]) {
+                        j++;
+                        l++;
+                        k = 0;
                     }
                 }
             }
         }
 
-
+        offset = 0;
+        for (int[] colConstraint : colConstraints) {
+            if (colConstraint[0] == 0) {
+                offset++;
+            } else {
+                break;
+            }
+        }
+        for (int i = 0; i < rowConstraints.length; i++) {
+            if (rowSize == rowConstraints[i][0]) {
+                for (int j = offset; j < rowSize + offset; j++) {
+                    board[i][j] = true;
+                }
+            } else if (rowSize == sum(rowConstraints[i])) {
+                for (int j = offset, k = 0, l = 0; l < rowConstraints.length && j < rowSize + offset; j++) {
+                    board[i][j] = true;
+                    if (++k == colConstraints[i][l]) {
+                        j++;
+                        l++;
+                        k = 0;
+                    }
+                }
+            }
+        }
     }
 
     private int sum(int[] arr) {
@@ -111,11 +137,6 @@ public class PicrossTouchSolver {
             sum += i;
         }
         return sum + arr.length - 1;
-    }
-
-    public static boolean[][] solve(int[][] colConstraints, int[][] rowConstraints) {
-        PicrossTouchSolver solved = new PicrossTouchSolver(colConstraints, rowConstraints);
-        return solved.board;
     }
 
     private boolean recursive(int idx) {
