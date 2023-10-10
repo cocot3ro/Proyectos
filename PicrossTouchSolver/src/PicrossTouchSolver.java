@@ -40,17 +40,12 @@ public class PicrossTouchSolver {
             return;
         }
         for (boolean[] possibility : allPossibilities.get(idx)) {
-            if (isValid()) {
-                return;
-            }
             applyPossibility(idx, possibility);
             if (isValid()) {
+                this.solved = true;
                 return;
             }
             solve(idx + 1);
-            if (isValid()) {
-                return;
-            }
         }
     }
 
@@ -63,13 +58,13 @@ public class PicrossTouchSolver {
     private List<List<boolean[]>> generateArrays(int[][] colConstraints, int size) {
         List<List<boolean[]>> allPossibilities = new LinkedList<>();
 
-        for(int[] colConstraint : colConstraints) {
+        for (int[] colConstraint : colConstraints) {
             allPossibilities.add(generateArrays(colConstraint, size));
         }
 
         int col = 0;
         for (List<boolean[]> subList : allPossibilities) {
-            for(Iterator<boolean[]> it = subList.iterator(); it.hasNext();) {
+            for (Iterator<boolean[]> it = subList.iterator(); it.hasNext(); ) {
                 if (!fit(it.next(), col)) {
                     it.remove();
                 }
@@ -170,16 +165,11 @@ public class PicrossTouchSolver {
 
     private boolean isValid() {
         for (int i = 0; i < board.length; i++) {
-            if (!isValid(i, i)) {
+            if (!isValidRow(i)) {
                 return false;
             }
         }
-
         return true;
-    }
-
-    private boolean isValid(int row, int col) {
-        return isValidRow(row) && isValidCol(col);
     }
 
     private boolean isValidRow(int row) {
@@ -187,40 +177,13 @@ public class PicrossTouchSolver {
         int[] result = new int[expected.length];
 
         boolean b = false;
-        for (int i = 0, idx = 0; i < board[row].length; i++) {
+        for (int i = 0, idx = 0; i < board[row].length && idx < result.length; i++) {
             if (board[row][i]) {
-                try {
-                    result[idx]++;
-                } catch (IndexOutOfBoundsException ex) {
-                    return false;
-                }
+                result[idx]++;
                 b = true;
             } else if (b) {
                 idx++;
                 b = false;
-            }
-        }
-
-        return Arrays.equals(result, expected);
-    }
-
-    private boolean isValidCol(int col) {
-        int[] expected = colConstraints[col];
-        int[] result = new int[expected.length];
-
-        boolean b = false;
-        for (int i = 0, idx = 0; i < board.length; i++) {
-            boolean[] row = board[i];
-            if (row[col]) {
-                try {
-                    result[idx]++;
-                } catch (IndexOutOfBoundsException ex) {
-                    return false;
-                }
-                b = true;
-            } else if (b) {
-                b = false;
-                idx++;
             }
         }
 
