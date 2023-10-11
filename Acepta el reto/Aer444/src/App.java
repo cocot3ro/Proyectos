@@ -3,81 +3,60 @@ import java.util.Scanner;
 public class App {
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
-/*
-6 0
-0 1 0 1 0 0
-6 0
-0 1 0 1 1 0
-8 1
-1 0 0 1 0 1 0 1
-9 1
-1 0 0 1 0 1 0 1 0
-11 1
-1 0 0 1 0 1 0 1 0 0 1
-0 0
-*/
 
-        int numMediciones, tolerancia;
+        int numMediciones;
+        int tolerancia;
+        int[] mediciones;
 
-        while ((numMediciones = sc.nextInt()) != 0) {
+        while (true) {
+
+            numMediciones = sc.nextInt();
             tolerancia = sc.nextInt();
 
-            if (numMediciones == 1) {
-                System.out.println(sc.nextInt());
+            mediciones = new int[numMediciones];
+
+            if (numMediciones == 0 && tolerancia == 0) {
+                System.exit(0);
             }
 
-            StringBuilder sb = new StringBuilder();
-            boolean b = false;
             for (int i = 0; i < numMediciones; i++) {
-                if (sc.nextInt() == 0) {
-                    if (b) {
-                        sb.append(0);
+                mediciones[i] = sc.nextInt();
+            }
+
+            int maximo = getMax(mediciones, tolerancia);
+
+            System.out.println(maximo);
+
+        }
+
+    }
+
+    private static int getMax(int[] mediciones, int tolerancia) {
+        int sum = 0, aux = 0, exit = 0, max = 0;
+        for (int i = 0; i < mediciones.length; i++) {
+            if (mediciones[i] == 1) {
+                for (int j = i; j < mediciones.length; j++) {
+                    sum++;
+                    exit = j;
+
+                    if (mediciones[j] == 1) {
+                        aux = 0;
+                        max = Math.max(max, sum);
+                    } else {
+                        aux++;
                     }
-                } else {
-                    b = true;
-                    sb.append(1);
+
+                    if (aux > tolerancia) {
+                        break;
+                    }
+
                 }
-            }
 
-            while (sb.toString().endsWith("0")) {
-                sb.deleteCharAt(sb.length() - 1);
-            }
-
-            int max = longestLine(sb.toString(), tolerancia);
-
-            System.out.println(max);
-
-        }
-
-        sc.close();
-    }
-
-    private static int longestLine(String s, int tolerancia) {
-        //System.err.println("String: " + s);
-        int size = s.length();
-        if (isValid(s, tolerancia)) {
-            return size;
-        }
-        for (int i = 0; i < size; i++) {
-            for (int j = 0; j < i + 1; j++) {
-                String subString = s.substring(j, size - i + j);
-                //System.err.print("subString: " + subString + " -> ");
-                if (isValid(subString, tolerancia)) {
-                    //System.err.println(true);
-                    return subString.length();
-                }
-                //System.err.println(false);
+                i = exit;
+                sum = 0;
+                aux = 0;
             }
         }
-
-        return 0;
-    }
-
-    private static boolean isValid(String substring, int tolerancia) {
-        StringBuilder sb = new StringBuilder("0");
-        for (int i = 0; i < tolerancia; i++) {
-            sb.append("0");
-        }
-        return !substring.contains(sb.toString());
+        return max;
     }
 }
