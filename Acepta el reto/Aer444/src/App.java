@@ -26,54 +26,58 @@ public class App {
                 System.out.println(sc.nextInt());
             }
 
-            boolean[] mediciones = new boolean[numMediciones];
+            StringBuilder sb = new StringBuilder();
+            boolean b = false;
             for (int i = 0; i < numMediciones; i++) {
-                mediciones[i] = sc.nextInt() == 1;
+                if (sc.nextInt() == 0) {
+                    if (b) {
+                        sb.append(0);
+                    }
+                } else {
+                    b = true;
+                    sb.append(1);
+                }
             }
 
-            int max = getMax(mediciones, tolerancia);
+            while (sb.toString().endsWith("0")) {
+                sb.deleteCharAt(sb.length() - 1);
+            }
+
+            int max = longestLine(sb.toString(), tolerancia);
 
             System.out.println(max);
+
         }
 
         sc.close();
     }
 
-    private static int getMax(boolean[] mediciones, int tolerancia) {
-        int size = mediciones.length;
-
-        int firstIndex = 0;
+    private static int longestLine(String s, int tolerancia) {
+        //System.err.println("String: " + s);
+        int size = s.length();
+        if (isValid(s, tolerancia)) {
+            return size;
+        }
         for (int i = 0; i < size; i++) {
-            if (mediciones[i]) {
-                firstIndex = i;
-                break;
+            for (int j = 0; j < i + 1; j++) {
+                String subString = s.substring(j, size - i + j);
+                //System.err.print("subString: " + subString + " -> ");
+                if (isValid(subString, tolerancia)) {
+                    //System.err.println(true);
+                    return subString.length();
+                }
+                //System.err.println(false);
             }
         }
 
-        int lastIndex = -1;
-        for (int i = 0; i < size; i++) {
-            if (mediciones[size - 1 - i]) {
-                lastIndex = size - i;
-                break;
-            }
-        }
-
-        int max = 0, curr = 0, contadorFrio = 0;
-        for (int i = firstIndex; i < lastIndex; i++) {
-            curr++;
-            if (mediciones[i]) {
-                contadorFrio = 0;
-            } else {
-                contadorFrio++;
-            }
-
-            if (contadorFrio > tolerancia) {
-                curr = 0;
-            } else {
-                max = Math.max(max, curr);
-            }
-        }
-        return max;
+        return 0;
     }
 
+    private static boolean isValid(String substring, int tolerancia) {
+        StringBuilder sb = new StringBuilder("0");
+        for (int i = 0; i < tolerancia; i++) {
+            sb.append("0");
+        }
+        return !substring.contains(sb.toString());
+    }
 }
