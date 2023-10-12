@@ -2,11 +2,11 @@ import java.util.*;
 
 public class PicrossTouchSolver {
 
-    public static final String RESET = "\u001B[0m";
-    public static final String RED = "\u001B[31m";
-    public static final String GREEN = "\u001B[32m";
-    public static final String BLUE = "\u001B[34m";
-    public static final String YELLOW = "\u001B[33m";
+    private static final String RESET = "\u001B[0m";
+    private static final String RED = "\u001B[31m";
+    private static final String GREEN = "\u001B[32m";
+    private static final String BLUE = "\u001B[34m";
+    private static final String YELLOW = "\u001B[33m";
 
     private final int[][] colConstraints;
     private final int[][] rowConstraints;
@@ -96,7 +96,6 @@ public class PicrossTouchSolver {
             System.out.println((col % 2 == 0 ? BLUE : YELLOW) + cont + RESET);
             col++;
         }
-
         System.out.println("total: " + total);
 
         return allPossibilities;
@@ -164,6 +163,7 @@ public class PicrossTouchSolver {
                 break;
             }
         }
+
         for (int i = 0; i < rowConstraints.length; i++) {
             if (rowSize == rowConstraints[i][0]) {
                 for (int j = offset; j < rowSize + offset; j++) {
@@ -180,6 +180,10 @@ public class PicrossTouchSolver {
                 }
             }
         }
+
+        //TODO
+        // poñer as comuns
+
     }
 
     private int sum(int[] arr) {
