@@ -28,12 +28,12 @@ public class PicrossTouchApp {
         //rowConstraints = new int[][]{{4, 1, 4}, {3, 5, 3}, {2, 3, 3, 2}, {1, 3, 3, 1}, {3, 3}, {3, 1, 1, 3}, {2, 1, 1, 2}, {2, 1, 1, 1, 1, 2}, {2, 1, 1, 2}, {5, 5}, {3, 3}, {1, 3, 3, 1}, {2, 3, 3, 2}, {3, 3, 3}, {4, 1, 4}};
         //solve(colConstraints, rowConstraints, enableOutput);
 
-        //original -> 15x15 -> 24: Time Limit Exceeded
+        //original -> 15x15 -> 24: Time Limit Exceeded => Accepted ~530ms
         //colConstraints = new int[][]{{15}, {3, 3}, {2, 8, 2}, {1, 2, 1, 1}, {1, 1, 5, 1, 1}, {1, 1, 2, 2, 1, 1}, {1, 1, 1, 1, 1, 1}, {1, 1, 1, 1, 1, 1}, {1, 1, 1, 2, 1, 1}, {1, 1, 6, 1, 1}, {1, 1, 2, 1, 1}, {1, 1, 1, 1, 1}, {2, 6, 3}, {3, 3}, {15}};
         //rowConstraints = new int[][]{{15}, {3, 3}, {2, 8, 2}, {1, 2, 1, 1}, {1, 1, 3, 1, 1, 1}, {1, 1, 2, 2, 1, 1}, {1, 1, 1, 1, 1, 1}, {1, 1, 1, 1, 1, 1}, {1, 1, 1, 1, 1, 1}, {1, 1, 2, 3, 1, 1}, {1, 1, 4, 2, 1}, {1, 1, 1}, {2, 11}, {3, 3}, {15}};
         //solve(colConstraints, rowConstraints, enableOutput);
 
-        //pack 1 -> 10x10 -> 5: Time Limit Exceeded => Accepted ~1650ms
+        //pack 1 -> 10x10 -> 5: Time Limit Exceeded => Accepted ~1430ms
         colConstraints = new int[][]{{2}, {3}, {3}, {8}, {2, 1}, {2, 1}, {2, 1, 2}, {2, 1, 3}, {2, 1, 3}, {8}};
         rowConstraints = new int[][]{{4}, {7}, {3, 1}, {1, 4}, {3, 1}, {1, 1}, {1, 3}, {3, 4}, {4, 3}, {3}};
         solve(colConstraints, rowConstraints, enableOutput);
