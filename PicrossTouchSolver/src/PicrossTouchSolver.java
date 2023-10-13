@@ -1,3 +1,4 @@
+import java.math.BigInteger;
 import java.util.*;
 
 public class PicrossTouchSolver {
@@ -7,6 +8,8 @@ public class PicrossTouchSolver {
     private static final String GREEN = "\u001B[32m";
     private static final String BLUE = "\u001B[34m";
     private static final String YELLOW = "\u001B[33m";
+    private static final String WHITE_BACKGROUND = "\033[0;107m";
+    private static final String BLACK_BACKGROUND = "\033[40m";
 
     private final int[][] colConstraints;
     private final int[][] rowConstraints;
@@ -24,7 +27,6 @@ public class PicrossTouchSolver {
         this.enableOutput = enableOutput;
 
         computeSizes();
-        rowConstants();
         rowCommons();
 
         this.allPossibilities = generateAllPossibilities(colConstraints, rowConstraints.length);
@@ -32,6 +34,7 @@ public class PicrossTouchSolver {
         if (enableOutput) {
             int col = 0;
             int total = 0;
+            BigInteger combinaciones = new BigInteger("1");
             for (List<boolean[]> list : this.allPossibilities) {
                 int cont = 0;
                 for (boolean[] arr : list) {
@@ -40,9 +43,10 @@ public class PicrossTouchSolver {
                     System.out.println((col % 2 == 0 ? GREEN : BLUE) + "col: " + col + " -> " + Arrays.toString(arr).replace("false", "0").replace("true", "1") + RESET);
                 }
                 System.out.println(YELLOW + "cont: " + cont + RESET);
+                combinaciones = combinaciones.multiply(new BigInteger(String.valueOf(cont)));
                 col++;
             }
-            System.out.println("total: " + total);
+            System.out.println("total: " + total + ", combinaciones totales: " + combinaciones);
         }
         solve(0);
     }
@@ -83,11 +87,15 @@ public class PicrossTouchSolver {
 
         int col = 0;
         int total = 0;
+        BigInteger combinaciones = new BigInteger("1");
+
         for (List<boolean[]> subList : allPossibilities) {
             int cont = 0;
             for (Iterator<boolean[]> it = subList.iterator(); it.hasNext(); ) {
-                total++;
-                cont++;
+                if (enableOutput) {
+                    total++;
+                    cont++;
+                }
                 boolean[] next = it.next();
                 if (enableOutput) {
                     System.out.print((col % 2 == 0 ? BLUE : GREEN) + "col: " + col + ":" + YELLOW + " test: " + Arrays.toString(next).replace("false", "0").replace("true", "1") + " -> " + RESET);
@@ -102,12 +110,13 @@ public class PicrossTouchSolver {
                 }
             }
             if (enableOutput) {
+                combinaciones = combinaciones.multiply(new BigInteger(String.valueOf(cont)));
                 System.out.println(YELLOW + "cont: " + cont + RESET);
             }
             col++;
         }
         if (enableOutput) {
-            System.out.println("total: " + total);
+            System.out.println("total: " + total + ", combinaciones totales: " + combinaciones);
         }
 
         return allPossibilities;
@@ -157,66 +166,53 @@ public class PicrossTouchSolver {
         }
     }
 
-    @Deprecated(forRemoval = true)
-    private void rowConstants() {
-        int offset = 0;
-        for (int[] colConstraint : colConstraints) {
-            if (colConstraint[0] == 0) {
-                offset++;
-            } else {
-                break;
-            }
-        }
-
-        for (int row = 0; row < rowConstraints.length; row++) {
-            if (rowSize == rowConstraints[row][0]) {
-                for (int col = offset; col < rowSize + offset; col++) {
-                    board[row][col] = true;
-                }
-            } else if (rowSize == sum(rowConstraints[row]) + rowConstraints[row].length - 1) {
-                for (int col = offset, k = 0, l = 0; l < rowConstraints.length && col < rowSize + offset; col++) {
-                    board[row][col] = true;
-                    if (++k == rowConstraints[row][l]) {
-                        col++;
-                        l++;
-                        k = 0;
-                    }
-                }
-            }
-        }
-    }
-
     private void rowCommons() {
-        //TODO
-        // poñer comuns en vase a posiblidades en fila
         List<List<boolean[]>> rowPossibilities = new LinkedList<>();
 
         for(int[] rowConstraint : rowConstraints) {
             rowPossibilities.add(generateArrays(rowConstraint, colConstraints.length));
         }
 
-        //TODO:
-        // ! POSIBLE REEMPLAZO PARA rowConstants()!!!!
-
         if (enableOutput) {
             int row = 0;
             int total = 0;
+            BigInteger combinaciones = new BigInteger("1");
             for (List<boolean[]> list : rowPossibilities) {
                 int cont = 0;
                 for (boolean[] arr : list) {
                     total++;
                     cont++;
-                    System.out.println((row % 2 == 0 ? GREEN : BLUE) + "row: " + row + " -> " + Arrays.toString(arr).replace("false", "0").replace("true", "1") + RESET);
+                    System.out.println((row % 2 == 0 ? BLUE : GREEN) + "row possibility: " + row + " -> " + Arrays.toString(arr).replace("false", "0").replace("true", "1") + RESET);
                 }
+                combinaciones = combinaciones.multiply(new BigInteger(String.valueOf(cont)));
                 System.out.println(YELLOW + "cont: " + cont + RESET);
                 row++;
             }
-            System.out.println("total: " + total);
+            System.out.println("total: " + total + ", combinaciones totales: " + combinaciones);
         }
 
+        List<boolean[]> result = new LinkedList<>();
         for (List<boolean[]> subList : rowPossibilities) {
-            //TODO:
-            // comprobar comunes. crear array base todo a true, aplicar && (base[i] && arr[i] : sublist)
+            boolean[] base = new boolean[subList.get(0).length];
+            Arrays.fill(base, true);
+
+            for (int i = 0; i < base.length; i++) {
+                for (boolean[] arr : subList) {
+                    base[i] &= arr[i];
+                }
+            }
+            result.add(base);
+        }
+
+        if (enableOutput) {
+            int index = 0;
+            for (boolean[] arr : result) {
+                System.out.println((index % 2 == 0 ? GREEN : BLUE) + "row common: " + String.format("%02d", index++) + " - > " + Arrays.toString(arr).replace("true", "1").replace("false", "0") + RESET);
+            }
+        }
+
+        for (int i = 0; i < board.length; i++) {
+            System.arraycopy(result.get(i), 0, board[i], 0, board[i].length);
         }
     }
 
