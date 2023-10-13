@@ -14,37 +14,41 @@ public class PicrossTouchSolver {
     private final List<List<boolean[]>> allPossibilities;
     private int rowSize;
     private boolean solved;
+    private final boolean enableOutput;
 
-    private PicrossTouchSolver(int[][] colConstraints, int[][] rowConstraints) {
+    private PicrossTouchSolver(int[][] colConstraints, int[][] rowConstraints, boolean enableOutput) {
         this.colConstraints = colConstraints;
         this.rowConstraints = rowConstraints;
         this.board = new boolean[rowConstraints.length][colConstraints.length];
-
         this.rowSize = colConstraints.length;
+        this.enableOutput = enableOutput;
+
         computeSizes();
         rowConstants();
+        rowCommons();
 
-        this.allPossibilities = generateArrays(colConstraints, rowConstraints.length);
+        this.allPossibilities = generateAllPossibilities(colConstraints, rowConstraints.length);
 
-        int col = 0;
-        int total = 0;
-        for (List<boolean[]> list : this.allPossibilities) {
-            int cont = 0;
-            for (boolean[] arr : list) {
-                total++;
-                cont++;
-                System.out.println((col % 2 == 0 ? GREEN : BLUE) + "col: " + col + " -> " + Arrays.toString(arr).replace("false", "0").replace("true", "1") + RESET);
+        if (enableOutput) {
+            int col = 0;
+            int total = 0;
+            for (List<boolean[]> list : this.allPossibilities) {
+                int cont = 0;
+                for (boolean[] arr : list) {
+                    total++;
+                    cont++;
+                    System.out.println((col % 2 == 0 ? GREEN : BLUE) + "col: " + col + " -> " + Arrays.toString(arr).replace("false", "0").replace("true", "1") + RESET);
+                }
+                System.out.println(YELLOW + "cont: " + cont + RESET);
+                col++;
             }
-            System.out.println((col % 2 == 0 ? GREEN : BLUE) + "cont: " + cont + RESET);
-            col++;
+            System.out.println("total: " + total);
         }
-        System.out.println("total: " + total);
-
         solve(0);
     }
 
-    public static boolean[][] solve(int[][] colConstraints, int[][] rowConstraints) {
-        return new PicrossTouchSolver(colConstraints, rowConstraints).board;
+    public static boolean[][] solve(int[][] colConstraints, int[][] rowConstraints, boolean print) {
+        return new PicrossTouchSolver(colConstraints, rowConstraints, print).board;
     }
 
     private void solve(int col) {
@@ -70,7 +74,7 @@ public class PicrossTouchSolver {
         }
     }
 
-    private List<List<boolean[]>> generateArrays(int[][] colConstraints, int size) {
+    private List<List<boolean[]>> generateAllPossibilities(int[][] colConstraints, int size) {
         List<List<boolean[]>> allPossibilities = new LinkedList<>();
 
         for (int[] colConstraint : colConstraints) {
@@ -85,29 +89,28 @@ public class PicrossTouchSolver {
                 total++;
                 cont++;
                 boolean[] next = it.next();
-                System.out.print((col % 2 == 0 ? BLUE : YELLOW) + "col: " + col + ", test: " + Arrays.toString(next).replace("false", "0").replace("true", "1") + " -> " + RESET);
+                if (enableOutput) {
+                    System.out.print((col % 2 == 0 ? BLUE : GREEN) + "col: " + col + ":" + YELLOW + " test: " + Arrays.toString(next).replace("false", "0").replace("true", "1") + " -> " + RESET);
+                }
                 if (!fit(next, col)) {
-                    System.out.println(RED + "false" + RESET);
+                    if (enableOutput) {
+                        System.out.println(RED + "false" + RESET);
+                    }
                     it.remove();
-                } else {
+                } else if (enableOutput) {
                     System.out.println(GREEN + "true" + RESET);
                 }
             }
-            System.out.println((col % 2 == 0 ? BLUE : YELLOW) + cont + RESET);
+            if (enableOutput) {
+                System.out.println(YELLOW + "cont: " + cont + RESET);
+            }
             col++;
         }
-        System.out.println("total: " + total);
+        if (enableOutput) {
+            System.out.println("total: " + total);
+        }
 
         return allPossibilities;
-    }
-
-    private boolean fit(boolean[] arr, int col) {
-        for (int i = 0; i < arr.length; i++) {
-            if (board[i][col] && !arr[i]) {
-                return false;
-            }
-        }
-        return true;
     }
 
     private List<boolean[]> generateArrays(int[] blocks, int size) {
@@ -154,6 +157,7 @@ public class PicrossTouchSolver {
         }
     }
 
+    @Deprecated(forRemoval = true)
     private void rowConstants() {
         int offset = 0;
         for (int[] colConstraint : colConstraints) {
@@ -164,34 +168,73 @@ public class PicrossTouchSolver {
             }
         }
 
-        for (int i = 0; i < rowConstraints.length; i++) {
-            if (rowSize == rowConstraints[i][0]) {
-                for (int j = offset; j < rowSize + offset; j++) {
-                    board[i][j] = true;
+        for (int row = 0; row < rowConstraints.length; row++) {
+            if (rowSize == rowConstraints[row][0]) {
+                for (int col = offset; col < rowSize + offset; col++) {
+                    board[row][col] = true;
                 }
-            } else if (rowSize == sum(rowConstraints[i]) + rowConstraints[i].length - 1) {
-                for (int j = offset, k = 0, l = 0; l < rowConstraints.length && j < rowSize + offset; j++) {
-                    board[i][j] = true;
-                    if (++k == rowConstraints[i][l]) {
-                        j++;
+            } else if (rowSize == sum(rowConstraints[row]) + rowConstraints[row].length - 1) {
+                for (int col = offset, k = 0, l = 0; l < rowConstraints.length && col < rowSize + offset; col++) {
+                    board[row][col] = true;
+                    if (++k == rowConstraints[row][l]) {
+                        col++;
                         l++;
                         k = 0;
                     }
                 }
             }
         }
+    }
 
+    private void rowCommons() {
         //TODO
-        // poñer as comuns
+        // poñer comuns en vase a posiblidades en fila
+        List<List<boolean[]>> rowPossibilities = new LinkedList<>();
 
+        for(int[] rowConstraint : rowConstraints) {
+            rowPossibilities.add(generateArrays(rowConstraint, colConstraints.length));
+        }
+
+        //TODO:
+        // ! POSIBLE REEMPLAZO PARA rowConstants()!!!!
+
+        if (enableOutput) {
+            int row = 0;
+            int total = 0;
+            for (List<boolean[]> list : rowPossibilities) {
+                int cont = 0;
+                for (boolean[] arr : list) {
+                    total++;
+                    cont++;
+                    System.out.println((row % 2 == 0 ? GREEN : BLUE) + "row: " + row + " -> " + Arrays.toString(arr).replace("false", "0").replace("true", "1") + RESET);
+                }
+                System.out.println(YELLOW + "cont: " + cont + RESET);
+                row++;
+            }
+            System.out.println("total: " + total);
+        }
+
+        for (List<boolean[]> subList : rowPossibilities) {
+            //TODO:
+            // comprobar comunes. crear array base todo a true, aplicar && (base[i] && arr[i] : sublist)
+        }
     }
 
     private int sum(int[] arr) {
         int sum = 0;
-        for (int i : arr) {
-            sum += i;
+        for (int num : arr) {
+            sum += num;
         }
         return sum;
+    }
+
+    private boolean fit(boolean[] arr, int col) {
+        for (int row = 0; row < arr.length; row++) {
+            if (board[row][col] && !arr[row]) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private boolean isValid() {
@@ -207,14 +250,14 @@ public class PicrossTouchSolver {
         int[] expected = rowConstraints[row];
         int[] result = new int[expected.length];
 
-        boolean b = false;
-        for (int i = 0, idx = 0; i < board[row].length && idx < result.length; i++) {
-            if (board[row][i]) {
+        boolean canJump = false;
+        for (int col = 0, idx = 0; col < board[row].length && idx < result.length; col++) {
+            if (board[row][col]) {
                 result[idx]++;
-                b = true;
-            } else if (b) {
+                canJump = true;
+            } else if (canJump) {
                 idx++;
-                b = false;
+                canJump = false;
             }
         }
 
