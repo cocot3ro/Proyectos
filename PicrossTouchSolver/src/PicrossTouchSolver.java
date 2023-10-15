@@ -8,14 +8,11 @@ public class PicrossTouchSolver {
     private static final String GREEN = "\u001B[32m";
     private static final String BLUE = "\u001B[34m";
     private static final String YELLOW = "\u001B[33m";
-    private static final String WHITE_BACKGROUND = "\033[0;107m";
-    private static final String BLACK_BACKGROUND = "\033[40m";
 
     private final int[][] colConstraints;
     private final int[][] rowConstraints;
     private final boolean[][] board;
     private final List<List<boolean[]>> allPossibilities;
-    private int rowSize;
     private boolean solved;
     private final boolean enableOutput;
 
@@ -23,15 +20,14 @@ public class PicrossTouchSolver {
         this.colConstraints = colConstraints;
         this.rowConstraints = rowConstraints;
         this.board = new boolean[rowConstraints.length][colConstraints.length];
-        this.rowSize = colConstraints.length;
         this.enableOutput = enableOutput;
 
-        computeSizes();
+        colCommons();
         rowCommons();
 
         this.allPossibilities = generateAllPossibilities(colConstraints, rowConstraints.length);
 
-        if (enableOutput) {
+        if (this.enableOutput) {
             int col = 0;
             int total = 0;
             BigInteger combinaciones = new BigInteger("1");
@@ -86,37 +82,40 @@ public class PicrossTouchSolver {
         }
 
         int col = 0;
-        int total = 0;
-        BigInteger combinaciones = new BigInteger("1");
+        if (enableOutput) {
+            int total = 0;
+            BigInteger combinaciones = new BigInteger("1");
 
-        for (List<boolean[]> subList : allPossibilities) {
-            int cont = 0;
-            for (Iterator<boolean[]> it = subList.iterator(); it.hasNext(); ) {
-                if (enableOutput) {
+            for (List<boolean[]> subList : allPossibilities) {
+                int cont = 0;
+                for (Iterator<boolean[]> it = subList.iterator(); it.hasNext(); ) {
                     total++;
                     cont++;
-                }
-                boolean[] next = it.next();
-                if (enableOutput) {
+                    boolean[] next = it.next();
                     System.out.print((col % 2 == 0 ? BLUE : GREEN) + "col: " + col + ":" + YELLOW + " test: " + Arrays.toString(next).replace("false", "0").replace("true", "1") + " -> " + RESET);
-                }
-                if (!fit(next, col)) {
-                    if (enableOutput) {
+                    if (dontFit(next, col)) {
                         System.out.println(RED + "false" + RESET);
+                        it.remove();
+                    } else {
+                        System.out.println(GREEN + "true" + RESET);
                     }
-                    it.remove();
-                } else if (enableOutput) {
-                    System.out.println(GREEN + "true" + RESET);
                 }
-            }
-            if (enableOutput) {
                 combinaciones = combinaciones.multiply(new BigInteger(String.valueOf(cont)));
                 System.out.println(YELLOW + "cont: " + cont + RESET);
+
+                col++;
             }
-            col++;
-        }
-        if (enableOutput) {
             System.out.println("total: " + total + ", combinaciones totales: " + combinaciones);
+        } else {
+            for (List<boolean[]> subList : allPossibilities) {
+                for (Iterator<boolean[]> it = subList.iterator(); it.hasNext(); ) {
+                    boolean[] next = it.next();
+                    if (dontFit(next, col)) {
+                        it.remove();
+                    }
+                }
+                col++;
+            }
         }
 
         return allPossibilities;
@@ -148,28 +147,37 @@ public class PicrossTouchSolver {
         }
     }
 
-    private void computeSizes() {
+    private void colCommons() {
+        List<List<boolean[]>> colPossibilities = new LinkedList<>();
+
         for (int[] colConstraint : colConstraints) {
-            if (colConstraint[0] == 0) {
-                this.rowSize--;
-            } else {
-                break;
-            }
+            colPossibilities.add(generateArrays(colConstraint, rowConstraints.length));
         }
 
-        for (int i = 0; i < colConstraints.length; i++) {
-            if (colConstraints[colConstraints.length - 1 - i][0] == 0) {
-                this.rowSize--;
-            } else {
-                break;
+        if (enableOutput) {
+            int col = 0;
+            int total = 0;
+            BigInteger combinaciones = new BigInteger("1");
+            for (List<boolean[]> list : colPossibilities) {
+                int cont = 0;
+                for (boolean[] arr : list) {
+                    total++;
+                    cont++;
+                    System.out.println((col % 2 == 0 ? BLUE : GREEN) + "col possibility: " + col + " -> " + Arrays.toString(arr).replace("false", "0").replace("true", "1") + RESET);
+                }
+                combinaciones = combinaciones.multiply(new BigInteger(String.valueOf(cont)));
+                System.out.println(YELLOW + "cont: " + cont + RESET);
+                col++;
             }
+            System.out.println("total: " + total + ", combinaciones totales: " + combinaciones);
         }
+
     }
 
     private void rowCommons() {
         List<List<boolean[]>> rowPossibilities = new LinkedList<>();
 
-        for(int[] rowConstraint : rowConstraints) {
+        for (int[] rowConstraint : rowConstraints) {
             rowPossibilities.add(generateArrays(rowConstraint, colConstraints.length));
         }
 
@@ -191,9 +199,9 @@ public class PicrossTouchSolver {
             System.out.println("total: " + total + ", combinaciones totales: " + combinaciones);
         }
 
-        List<boolean[]> result = new LinkedList<>();
+        List<boolean[]> commons = new LinkedList<>();
+        boolean[] base = new boolean[rowPossibilities.get(0).get(0).length];
         for (List<boolean[]> subList : rowPossibilities) {
-            boolean[] base = new boolean[subList.get(0).length];
             Arrays.fill(base, true);
 
             for (int i = 0; i < base.length; i++) {
@@ -201,36 +209,28 @@ public class PicrossTouchSolver {
                     base[i] &= arr[i];
                 }
             }
-            result.add(base);
+            commons.add(base);
         }
 
         if (enableOutput) {
             int index = 0;
-            for (boolean[] arr : result) {
-                System.out.println((index % 2 == 0 ? GREEN : BLUE) + "row common: " + String.format("%02d", index++) + " - > " + Arrays.toString(arr).replace("true", "1").replace("false", "0") + RESET);
+            for (boolean[] commonRow : commons) {
+                System.out.println((index % 2 == 0 ? GREEN : BLUE) + "row common: " + String.format("%02d", index++) + " - > " + Arrays.toString(commonRow).replace("true", "1").replace("false", "0") + RESET);
             }
         }
 
         for (int i = 0; i < board.length; i++) {
-            System.arraycopy(result.get(i), 0, board[i], 0, board[i].length);
+            System.arraycopy(commons.get(i), 0, board[i], 0, board[i].length);
         }
     }
 
-    private int sum(int[] arr) {
-        int sum = 0;
-        for (int num : arr) {
-            sum += num;
-        }
-        return sum;
-    }
-
-    private boolean fit(boolean[] arr, int col) {
+    private boolean dontFit(boolean[] arr, int col) {
         for (int row = 0; row < arr.length; row++) {
             if (board[row][col] && !arr[row]) {
-                return false;
+                return true;
             }
         }
-        return true;
+        return false;
     }
 
     private boolean isValid() {
