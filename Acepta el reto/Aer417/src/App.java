@@ -23,12 +23,12 @@ public class App {
             return false;
         }
 
-        for (int i = 0, lastIndex = -1; i < inputLength / subStringLength; i++) {
-            int idx = input.indexOf(subString, lastIndex + 1);
+        for (int i = 0, nextIndex = 0; i < inputLength / subStringLength; i++) {
+            int idx = input.indexOf(subString, nextIndex);
             if (idx == -1) {
                 return false;
             }
-            lastIndex = idx;
+            nextIndex = idx + subStringLength;
         }
 
         return true;
