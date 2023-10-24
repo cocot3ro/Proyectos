@@ -1,5 +1,3 @@
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Scanner;
 
 public class App {
@@ -8,26 +6,21 @@ public class App {
 
         String s;
         while (!(s  = sc.nextLine()).startsWith(".")) {
-            Map<Character, Integer> map = new HashMap<>();
+            int prendasVerano = 0;
+            int prendasInvierno = 0;
             for (char c : s.substring(0, s.length() - 2).toCharArray()) {
                 switch (c) {
-                    case 'V': case 'I':
-                        map.put(c, (map.get(c) == null ? 1 : map.get(c) + 1));
+                    case 'V':
+                        prendasVerano++;
+                        break;
+                    case 'I':
+                        prendasInvierno++;
                         break;
                     case 'A':
-                        map.put('V', (map.get('V') == null ? 1 : map.get('V') + 1));
-                        map.put('I', (map.get('I') == null ? 1 : map.get('I') + 1));
+                        prendasVerano++;
+                        prendasInvierno++;
                         break;
                 }
-            }
-
-            Integer prendasVerano = map.get('V');
-            if (prendasVerano == null) {
-                prendasVerano = 0;
-            }
-            Integer prendasInvierno = map.get('I');
-            if (prendasInvierno == null) {
-                prendasInvierno = 0;
             }
 
             if (prendasVerano > prendasInvierno) {
