@@ -1,19 +1,25 @@
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 public class Solution {
+    Map<Integer, Integer> map = new LinkedHashMap<>();
+
     public List<Integer> rightSideView(TreeNode root) {
-        if (root == null) {
-            return new LinkedList<>();
+        recursive(0, root);
+
+        return new LinkedList<>(map.values());
+    }
+
+    private void recursive(int level, TreeNode node) {
+        if (node == null) {
+            return;
         }
 
-        List<Integer> ans = new LinkedList<>();
+        map.put(level, node.val);
 
-        while (root != null) {
-            ans.add(root.val);
-            root = root.right;
-        }
-
-        return ans;
+        recursive(level + 1, node.left);
+        recursive(level + 1, node.right);
     }
 }
