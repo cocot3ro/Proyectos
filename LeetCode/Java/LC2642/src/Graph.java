@@ -23,31 +23,36 @@ public class Graph {
             explored = false;
             minorTime = Integer.MAX_VALUE;
         }
+
+        @Override
+        public String toString() {
+            return val + "";
+        }
     }
 
     class Singleton {
         Map<Integer, Node> singleton;
 
-        Singleton() {
-            this.singleton = new HashMap<>();
+        Singleton(int initialCapacity) {
+            this.singleton = new HashMap<>(initialCapacity);
         }
 
-        Node getInstance(int n) {
-            if (!singleton.containsKey(n)) {
-                singleton.put(n, new Node(n));
+        Node getInstance(int nodeVal) {
+            if (!singleton.containsKey(nodeVal)) {
+                singleton.put(nodeVal, new Node(nodeVal));
             }
-            return singleton.get(n);
+            return singleton.get(nodeVal);
         }
 
+        void reset() {
+            singleton.values().forEach(Node::reset);
+        }
     }
 
     private final Singleton singleton;
-    boolean unreachable;
-    private final List<Node> list;
 
-    public Graph(int n, int[][] edges) {
-        this.singleton = new Singleton();
-        list = new ArrayList<>(n);
+    public Graph(int initialCapacity, int[][] edges) {
+        this.singleton = new Singleton(initialCapacity);
         for (int[] edge : edges) {
             addEdge(edge);
         }
@@ -56,16 +61,31 @@ public class Graph {
     public void addEdge(int[] edge) {
         Node node = singleton.getInstance(edge[0]);
         node.addNext(edge[1], edge[2]);
-        list.add(node);
     }
 
     public int shortestPath(int node1, int node2) {
-        this.unreachable = false;
-        list.forEach(Node::reset);
+        singleton.reset();
         singleton.getInstance(node1).minorTime = 0;
 
-        int ans = recursive(node1, node2);
-        return (unreachable ? -1 : ans);
+        if (!isReachable(node1, node2)) {
+            return -1;
+        }
+
+        return recursive(node1, node2);
+    }
+
+    private boolean isReachable(int node1, int node2) {
+        if (node1 == node2) {
+            return true;
+        }
+
+        for (Map.Entry<Node, Integer> entry : singleton.getInstance(node1).next.entrySet()) {
+            if (isReachable(entry.getKey().val, node2)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private int recursive(int node1, int node2) {
@@ -73,28 +93,19 @@ public class Graph {
             return singleton.getInstance(node2).minorTime;
         }
 
-        if (unreachable) {
-            return -1;
-        }
-
         Node thisNode = singleton.getInstance(node1);
         thisNode.explored = true;
         int minorTime = Integer.MAX_VALUE;
         Node minorNode = null;
         for (Map.Entry<Node, Integer> entry : thisNode.next.entrySet()) {
-            Node aNextNode = entry.getKey();
-            if (!aNextNode.explored) {
-                aNextNode.minorTime = Math.min(aNextNode.minorTime, thisNode.minorTime + entry.getValue());
-                if (aNextNode.minorTime < minorTime) {
-                    minorTime = aNextNode.minorTime;
-                    minorNode = aNextNode;
+            Node nextNode = entry.getKey();
+            if (!nextNode.explored) {
+                nextNode.minorTime = Math.min(nextNode.minorTime, thisNode.minorTime + entry.getValue());
+                if (nextNode.minorTime < minorTime) {
+                    minorTime = nextNode.minorTime;
+                    minorNode = nextNode;
                 }
             }
-        }
-
-        if (minorNode == null) {
-            this.unreachable = true;
-            return -1;
         }
 
         return recursive(minorNode.val, node2);
