@@ -1,7 +1,4 @@
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class Graph {
 
@@ -50,7 +47,7 @@ public class Graph {
 
     public Graph(int n, int[][] edges) {
         this.singleton = new Singleton();
-        list = new LinkedList<>();
+        list = new ArrayList<>(n);
         for (int[] edge : edges) {
             addEdge(edge);
         }
@@ -68,13 +65,12 @@ public class Graph {
         singleton.getInstance(node1).minorTime = 0;
 
         int ans = recursive(node1, node2);
-        System.out.println("ans = " + ans);
         return (unreachable ? -1 : ans);
     }
 
     private int recursive(int node1, int node2) {
         if (node1 == node2) {
-            return 0;
+            return singleton.getInstance(node2).minorTime;
         }
 
         if (unreachable) {
@@ -88,9 +84,8 @@ public class Graph {
         for (Map.Entry<Node, Integer> entry : thisNode.next.entrySet()) {
             Node aNextNode = entry.getKey();
             if (!aNextNode.explored) {
-                int newTime = thisNode.minorTime + entry.getValue();
-                if (newTime < aNextNode.minorTime) {
-                    aNextNode.minorTime = newTime;
+                aNextNode.minorTime = Math.min(aNextNode.minorTime, thisNode.minorTime + entry.getValue());
+                if (aNextNode.minorTime < minorTime) {
                     minorTime = aNextNode.minorTime;
                     minorNode = aNextNode;
                 }
@@ -102,6 +97,6 @@ public class Graph {
             return -1;
         }
 
-        return minorTime + recursive(minorNode.val, node2);
+        return recursive(minorNode.val, node2);
     }
 }
