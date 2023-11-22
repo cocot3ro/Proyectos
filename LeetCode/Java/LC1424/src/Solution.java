@@ -2,7 +2,7 @@ import java.util.*;
 
 public class Solution {
     public int[] findDiagonalOrder(List<List<Integer>> nums) {
-        Map<Integer, Stack<Integer>> map = new HashMap<>();
+        Map<Integer, Stack<Integer>> map = new LinkedHashMap<>();
 
         int row = 0;
         int items = 0;
