@@ -1,6 +1,5 @@
 import javax.swing.*;
 import java.awt.*;
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -75,7 +74,6 @@ public class GUI extends JFrame {
         }
     }
 
-    // Método para convertir milisegundos a una fecha en formato DD:MM:AAAA
     public String convertDate(long milisegundos) {
         SimpleDateFormat formatoFecha = new SimpleDateFormat("dd/MM/yyyy");
         Date fecha = new Date(milisegundos);
