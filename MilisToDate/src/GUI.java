@@ -1,5 +1,6 @@
 import javax.swing.*;
 import java.awt.*;
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -18,9 +19,9 @@ public class GUI extends JFrame {
         setLocationRelativeTo(null);
         setVisible(true);
 
-        txt1 = new JTextField(10);
-        txt2 = new JTextField(10);
-        txt3 = new JTextField(10);
+        txt1 = new JTextField(20);
+        txt2 = new JTextField(20);
+        txt3 = new JTextField(20);
         btn = new JButton("Convert");
 
         btn.addActionListener(actionEvent -> {
@@ -48,7 +49,9 @@ public class GUI extends JFrame {
 
     public Long convertHour(String hora) {
         try {
-            return SimpleDateFormat.getTimeInstance().parse(hora).getTime();
+            DateFormat formatoHora = SimpleDateFormat.getTimeInstance();
+            Date fecha = formatoHora.parse(hora);
+            return fecha.getTime();
         } catch (ParseException e) {
             e.printStackTrace();
             return -1L;
@@ -56,19 +59,26 @@ public class GUI extends JFrame {
     }
 
     public String convertHour(long milisegundos) {
-        return SimpleDateFormat.getTimeInstance().format(new Date(milisegundos));
+        SimpleDateFormat formatoHora = new SimpleDateFormat("HH:mm:ss");
+        Date fecha = new Date(milisegundos);
+        return formatoHora.format(fecha);
     }
 
     public Long convertDate(String fecha) {
         try {
-            return SimpleDateFormat.getDateInstance().parse(fecha).getTime();
+            DateFormat formatoFecha = new SimpleDateFormat("dd/MM/yyyy");
+            Date fechaObjeto = formatoFecha.parse(fecha);
+            return fechaObjeto.getTime();
         } catch (ParseException e) {
             e.printStackTrace();
             return -1L;
         }
     }
 
+    // Método para convertir milisegundos a una fecha en formato DD:MM:AAAA
     public String convertDate(long milisegundos) {
-        return SimpleDateFormat.getDateInstance().format(new Date(milisegundos));
+        SimpleDateFormat formatoFecha = new SimpleDateFormat("dd/MM/yyyy");
+        Date fecha = new Date(milisegundos);
+        return formatoFecha.format(fecha);
     }
 }
