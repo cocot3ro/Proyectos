@@ -42,6 +42,10 @@ public class GUI extends JFrame {
         add(btn);
     }
 
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(GUI::new);
+    }
+
     public Long convertHour(String hora) {
         try {
             SimpleDateFormat formatoHora = new SimpleDateFormat("HH:mm:ss");
@@ -75,9 +79,5 @@ public class GUI extends JFrame {
         SimpleDateFormat formatoFecha = new SimpleDateFormat("dd/MM/yyyy");
         Date fecha = new Date(milisegundos);
         return formatoFecha.format(fecha);
-    }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(GUI::new);
     }
 }
