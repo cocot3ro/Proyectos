@@ -12,6 +12,7 @@ public class GUI extends JFrame {
     private final JButton btn;
 
     private GUI() {
+        super("Time to millis converter");
         setLayout(new FlowLayout());
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(600, 100);
