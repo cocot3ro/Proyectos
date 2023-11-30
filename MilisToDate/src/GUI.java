@@ -49,7 +49,7 @@ public class GUI extends JFrame {
 
     public Long convertHour(String hora) {
         try {
-            DateFormat formatoHora = SimpleDateFormat.getTimeInstance();
+            SimpleDateFormat formatoHora = new SimpleDateFormat("HH:mm:ss");
             Date fecha = formatoHora.parse(hora);
             return fecha.getTime();
         } catch (ParseException e) {
@@ -66,7 +66,7 @@ public class GUI extends JFrame {
 
     public Long convertDate(String fecha) {
         try {
-            DateFormat formatoFecha = new SimpleDateFormat("dd/MM/yyyy");
+            SimpleDateFormat formatoFecha = new SimpleDateFormat("dd/MM/yyyy");
             Date fechaObjeto = formatoFecha.parse(fecha);
             return fechaObjeto.getTime();
         } catch (ParseException e) {
