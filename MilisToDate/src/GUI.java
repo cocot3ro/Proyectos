@@ -48,9 +48,7 @@ public class GUI extends JFrame {
 
     public Long convertHour(String hora) {
         try {
-            SimpleDateFormat formatoHora = new SimpleDateFormat("HH:mm:ss");
-            Date fecha = formatoHora.parse(hora);
-            return fecha.getTime();
+            return SimpleDateFormat.getTimeInstance().parse(hora).getTime();
         } catch (ParseException e) {
             e.printStackTrace();
             return -1L;
@@ -58,26 +56,19 @@ public class GUI extends JFrame {
     }
 
     public String convertHour(long milisegundos) {
-        SimpleDateFormat formatoHora = new SimpleDateFormat("HH:mm:ss");
-        Date fecha = new Date(milisegundos);
-        return formatoHora.format(fecha);
+        return SimpleDateFormat.getTimeInstance().format(new Date(milisegundos));
     }
 
     public Long convertDate(String fecha) {
         try {
-            SimpleDateFormat formatoFecha = new SimpleDateFormat("dd/MM/yyyy");
-            Date fechaObjeto = formatoFecha.parse(fecha);
-            return fechaObjeto.getTime();
+            return SimpleDateFormat.getDateInstance().parse(fecha).getTime();
         } catch (ParseException e) {
             e.printStackTrace();
             return -1L;
         }
     }
 
-    // Método para convertir milisegundos a una fecha en formato DD:MM:AAAA
     public String convertDate(long milisegundos) {
-        SimpleDateFormat formatoFecha = new SimpleDateFormat("dd/MM/yyyy");
-        Date fecha = new Date(milisegundos);
-        return formatoFecha.format(fecha);
+        return SimpleDateFormat.getDateInstance().format(new Date(milisegundos));
     }
 }
