@@ -5,34 +5,34 @@ public class Solution {
             return s;
         }
 
-        String[][] zigzag = new String[numRows][Math.max(s.length() / 2, 1)];
+        StringBuilder[] rows = new StringBuilder[numRows];
+        for (int i = 0; i < numRows; i++) {
+            rows[i] = new StringBuilder();
+        }
 
         int row = 0;
-        int col = 0;
-        boolean b = true;
+        boolean down = true;
         for (int i = 0; i < s.length(); i++) {
-            if (b) {
-                zigzag[row++][col] = String.valueOf(s.charAt(i));
-                if (row == numRows) {
-                    col++;
-                    row-=2;
-                    b = false;
-                }
+            rows[row].append(s.charAt(i));
+
+            if (down) {
+                row++;
             } else {
-                zigzag[row--][col++] = String.valueOf(s.charAt(i));
-                if (row == 0) {
-                    b = true;
-                }
+                row--;
+            }
+
+            if (row == numRows - 1) {
+                down = false;
+            } else if (row == 0) {
+                down = true;
             }
         }
 
-        StringBuilder str = new StringBuilder();
-        for (String[] string : zigzag) {
-            for (String aString : string) {
-                str.append((aString == null ? "" : aString));
-            }
+        StringBuilder result = new StringBuilder();
+        for (int i = 0; i < numRows; i++) {
+            result.append(rows[i]);
         }
 
-        return str.toString();
+        return result.toString();
     }
 }
