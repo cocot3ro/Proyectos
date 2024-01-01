@@ -10,6 +10,8 @@ import java.net.Socket;
 public class Server extends JFrame implements Runnable {
     private final JTextArea txtMessage;
 
+    // TODO: campo para introducir el puerto, boton para iniciar el servidor, boton para detener el servidor
+
     private Server() {
         super("Servidor");
         setLayout(new BorderLayout());

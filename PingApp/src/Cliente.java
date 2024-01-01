@@ -65,6 +65,7 @@ public class Cliente extends JFrame {
 
     }
 
+    // TODO: usar threads
     private void ping(String ip, int port, String message) {
         try (Socket socket = new Socket(ip, port);
              PrintWriter socketOut = new PrintWriter(socket.getOutputStream(), true);
