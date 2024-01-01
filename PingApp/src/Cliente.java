@@ -84,7 +84,7 @@ public class Cliente extends JFrame {
                 // Recibir la respuesta del servidor
                 String response = socketIn.readLine();
                 long end = System.currentTimeMillis();
-                txtResponse.append("Respuesta del servidor: " + response + " " + (end - start) + "ms." + System.lineSeparator());
+                txtResponse.append("Respuesta del servidor: \"" + response + "\" " + (end - start) + "ms." + System.lineSeparator());
                 txtResponse.append("==========================================" + System.lineSeparator());
 
             } catch (IOException e) {
