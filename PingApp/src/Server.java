@@ -9,8 +9,10 @@ import java.net.Socket;
 
 public class Server extends JFrame implements Runnable {
     private final JTextArea txtMessage;
-
-    // TODO: campo para introducir el puerto, boton para iniciar el servidor, boton para detener el servidor
+    private final JSpinner spnPort;
+    private final JButton btnStart;
+    private final JButton btnStop;
+    private boolean running = false;
 
     private Server() {
         super("Servidor");
@@ -21,10 +23,36 @@ public class Server extends JFrame implements Runnable {
         setVisible(true);
 
         txtMessage = new JTextArea();
-        txtMessage.setEditable(false);
-        add(txtMessage, BorderLayout.CENTER);
+        spnPort = new JSpinner(new SpinnerNumberModel(27015, 0, 65535, 1));
+        btnStart = new JButton("Start");
+        btnStop = new JButton("Stop");
 
-        new Thread(this).start();
+        btnStop.setEnabled(false);
+
+        btnStart.addActionListener(e -> {
+            running = true;
+            btnStart.setEnabled(false);
+            btnStop.setEnabled(true);
+            new Thread(this).start();
+        });
+
+        btnStop.addActionListener(e -> {
+            running = false;
+            btnStart.setEnabled(true);
+            btnStop.setEnabled(false);
+        });
+
+        JPanel toolbar = new JPanel(new FlowLayout());
+
+        toolbar.add(new JLabel("Puerto"));
+        toolbar.add(spnPort);
+        toolbar.add(btnStart);
+        toolbar.add(btnStop);
+
+        txtMessage.setEditable(false);
+
+        add(new JScrollPane(txtMessage), BorderLayout.CENTER);
+        add(toolbar, BorderLayout.PAGE_START);
     }
 
     public static void main(String[] args) {
@@ -33,12 +61,12 @@ public class Server extends JFrame implements Runnable {
 
     @Override
     public void run() {
-        final int PORT = 27015;
+        final int PORT = (Integer) spnPort.getValue();
 
         try (ServerSocket serverSocket = new ServerSocket(PORT)) {
             txtMessage.append("Servidor escuchando en el puerto " + PORT + System.lineSeparator());
 
-            while (true) {
+            while (running) {
                 try (Socket clientSocket = serverSocket.accept();
                      BufferedReader socketIn = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
                      PrintWriter socketOut = new PrintWriter(clientSocket.getOutputStream(), true)) {
@@ -52,13 +80,16 @@ public class Server extends JFrame implements Runnable {
                     // Enviar respuesta al cliente
                     socketOut.println("¡Mensaje recibido correctamente! -> " + clientSocket.getInetAddress() + ": " + inputLine);
 
-                    txtMessage.append("==========================================" + System.lineSeparator());
 
                 } catch (IOException e) {
+                    System.err.println("Error al conectar con el cliente");
                     e.printStackTrace();
                 }
             }
+
+            txtMessage.append("==========================================" + System.lineSeparator());
         } catch (IOException e) {
+            System.err.println("Error al iniciar el servidor");
             e.printStackTrace();
         }
     }
