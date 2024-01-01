@@ -12,6 +12,7 @@ public class Server extends JFrame implements Runnable {
     private final JSpinner spnPort;
     private final JButton btnStart;
     private final JButton btnStop;
+    private final JButton btnClear;
     private boolean running = false;
 
     private Server() {
@@ -26,6 +27,7 @@ public class Server extends JFrame implements Runnable {
         spnPort = new JSpinner(new SpinnerNumberModel(27015, 0, 65535, 1));
         btnStart = new JButton("Start");
         btnStop = new JButton("Stop");
+        btnClear = new JButton("Clear");
 
         btnStop.setEnabled(false);
 
@@ -42,12 +44,15 @@ public class Server extends JFrame implements Runnable {
             btnStop.setEnabled(false);
         });
 
+        btnClear.addActionListener(e -> txtMessage.setText(""));
+
         JPanel toolbar = new JPanel(new FlowLayout());
 
         toolbar.add(new JLabel("Puerto"));
         toolbar.add(spnPort);
         toolbar.add(btnStart);
         toolbar.add(btnStop);
+        toolbar.add(btnClear);
 
         txtMessage.setEditable(false);
 
@@ -71,14 +76,14 @@ public class Server extends JFrame implements Runnable {
                      BufferedReader socketIn = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
                      PrintWriter socketOut = new PrintWriter(clientSocket.getOutputStream(), true)) {
 
-                    txtMessage.append("Cliente conectado desde " + clientSocket.getInetAddress() + System.lineSeparator());
+                    txtMessage.append("Cliente conectado desde " + clientSocket.getInetAddress() + ":" + clientSocket.getPort());
 
                     // Recibir datos del cliente
                     String inputLine = socketIn.readLine();
-                    txtMessage.append("Mensaje recibido: " + inputLine + System.lineSeparator());
+                    txtMessage.append(" Mensaje recibido: " + inputLine + System.lineSeparator());
 
                     // Enviar respuesta al cliente
-                    socketOut.println("¡Mensaje recibido correctamente! -> " + clientSocket.getInetAddress() + ": " + inputLine);
+                    socketOut.println("¡Mensaje recibido correctamente! " + clientSocket.getInetAddress() + ":" + clientSocket.getPort() + " -> " + inputLine);
 
 
                 } catch (IOException e) {

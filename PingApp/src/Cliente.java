@@ -1,6 +1,9 @@
 import javax.swing.*;
 import java.awt.*;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.net.Socket;
 
 public class Cliente extends JFrame {
@@ -8,6 +11,7 @@ public class Cliente extends JFrame {
     private final JTextField txtIp;
     private final JSpinner spnPort;
     private final JTextField txtMessage;
+    private final JButton btnClear;
     private final JTextArea txtResponse;
     private final JButton btnPing;
 
@@ -15,7 +19,7 @@ public class Cliente extends JFrame {
         super("Cliente");
         setLayout(new BorderLayout());
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(600, 500);
+        setSize(700, 500);
         setLocationRelativeTo(null);
         setVisible(true);
 
@@ -41,11 +45,12 @@ public class Cliente extends JFrame {
         btnPing = new JButton("Ping");
         toolbar.add(btnPing);
 
-        add(toolbar, BorderLayout.PAGE_START);
-
         txtResponse = new JTextArea();
         txtResponse.setEditable(false);
-        add(new JScrollPane(txtResponse), BorderLayout.CENTER);
+
+        btnClear = new JButton("Clear");
+        btnClear.addActionListener(e -> txtResponse.setText(""));
+
 
         // use a socket to ping the server
         btnPing.addActionListener(e -> {
@@ -67,15 +72,24 @@ public class Cliente extends JFrame {
             ping(ipAddress, portNumber, message);
         });
 
+        toolbar.add(btnClear);
+
+        add(new JScrollPane(txtResponse), BorderLayout.CENTER);
+        add(toolbar, BorderLayout.PAGE_START);
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(Cliente::new);
     }
 
     private void ping(String ip, int port, String message) {
         new Thread(() -> {
+            txtResponse.append("Intentando conectar con " + ip + ":" + port + System.lineSeparator());
             try (Socket socket = new Socket(ip, port);
                  PrintWriter socketOut = new PrintWriter(socket.getOutputStream(), true);
                  BufferedReader socketIn = new BufferedReader(new InputStreamReader(socket.getInputStream()))) {
 
-                txtResponse.append("Conectado al servidor en " + ip + ":" + port + System.lineSeparator());
+                txtResponse.append("Conexión establecida con " + ip + ":" + port + System.lineSeparator());
 
                 // Enviar el mensaje al servidor
                 long start = System.currentTimeMillis();
@@ -85,7 +99,6 @@ public class Cliente extends JFrame {
                 String response = socketIn.readLine();
                 long end = System.currentTimeMillis();
                 txtResponse.append("Respuesta del servidor: \"" + response + "\" " + (end - start) + "ms." + System.lineSeparator());
-                txtResponse.append("==========================================" + System.lineSeparator());
 
             } catch (IOException e) {
                 txtResponse.append("Error al conectar al servidor en " + ip + ":" + port + System.lineSeparator());
@@ -93,10 +106,8 @@ public class Cliente extends JFrame {
                 System.err.println("Error al conectar al servidor");
                 e.printStackTrace();
             }
-        }).start();
-    }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(Cliente::new);
+            txtResponse.append("==========================================" + System.lineSeparator());
+        }).start();
     }
 }
