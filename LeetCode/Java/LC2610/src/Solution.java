@@ -4,6 +4,7 @@ import java.util.List;
 public class Solution {
     public List<List<Integer>> findMatrix(int[] nums) {
         List<List<Integer>> matrix = new LinkedList<>();
+        matrix.add(new LinkedList<>());
 
         outer:
         for (Integer num : nums) {
