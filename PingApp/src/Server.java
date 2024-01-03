@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
 
 public class Server extends JFrame implements Runnable {
     private final JTextArea txtMessage;
@@ -14,6 +15,8 @@ public class Server extends JFrame implements Runnable {
     private final JButton btnStop;
     private final JButton btnClear;
     private boolean running = false;
+
+    private ServerSocket serverSocket;
 
     private Server() {
         super("Servidor");
@@ -39,6 +42,10 @@ public class Server extends JFrame implements Runnable {
         });
 
         btnStop.addActionListener(e -> {
+            try {
+                serverSocket.close();
+            } catch (IOException ignore) {}
+
             running = false;
             btnStart.setEnabled(true);
             btnStop.setEnabled(false);
@@ -69,6 +76,7 @@ public class Server extends JFrame implements Runnable {
         final int PORT = (Integer) spnPort.getValue();
 
         try (ServerSocket serverSocket = new ServerSocket(PORT)) {
+            this.serverSocket = serverSocket;
             txtMessage.append("Servidor escuchando en el puerto " + PORT + System.lineSeparator());
 
             while (running) {
@@ -84,8 +92,8 @@ public class Server extends JFrame implements Runnable {
 
                     // Enviar respuesta al cliente
                     socketOut.println("¡Mensaje recibido correctamente! " + clientSocket.getInetAddress() + ":" + clientSocket.getPort() + " -> " + inputLine);
-
-
+                } catch (SocketException e) {
+                    txtMessage.append("Parando servidor en el puerto " + PORT + System.lineSeparator());
                 } catch (IOException e) {
                     System.err.println("Error al conectar con el cliente");
                     e.printStackTrace();
