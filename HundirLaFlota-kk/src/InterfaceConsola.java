@@ -1,18 +1,22 @@
+import assets.Estados;
+import assets.Punto2D;
+
 import java.util.Scanner;
 
-import assets.*;
-
 public class InterfaceConsola {
-    Scanner sc = new Scanner(System.in);
+    private final Scanner sc;
 
-    HundirLaFlota hlf;
-    
+    private final HundirLaFlota hlf;
+
     InterfaceConsola() {
+        sc = new Scanner(System.in);
         hlf = new HundirLaFlota();
-        
         this.presentarJuego();
-        
         this.setTablerosFlota();
+    }
+
+    public static void main(String[] args) {
+        new InterfaceConsola();
     }
 
     void presentarJuego() {
@@ -35,7 +39,7 @@ public class InterfaceConsola {
 
         this.cambiarTableroFlotaJugador();
 
-        this.setFlotaMáquina();
+        this.setFlotaMaquina();
 
         //this.mostrarTablero(hlf.getTableroFlotaMáquina());
 
@@ -50,14 +54,13 @@ public class InterfaceConsola {
     }
 
     void colocarBarcosJugador(Estados estado) {
-        bucleColocarBarcosJugador:
         while (true) {
             System.out.println("\n[COLOCANDO BARCOS]");
             System.out.println("Este es tu tablero");
             this.mostrarTablero(hlf.getTableroFlotaJugador());
             System.out.println("\nDónde quieres colocar "
-            + (hlf.getNombreBarco(estado).equals("fragata")?"la " : "el ")
-            + hlf.getNombreBarco(estado) + "? (ocupa " + hlf.getTamañoBarco(estado) + " espacios).");
+                    + (hlf.getNombreBarco(estado).equals("fragata") ? "la " : "el ")
+                    + hlf.getNombreBarco(estado) + "? (ocupa " + hlf.getTamanhoBarco(estado) + " espacios).");
             System.out.println("Introduce dos coordenadas con formato [A-G][1-7], ");
 
             System.out.print("\nCoordenada de inicio: ");
@@ -66,19 +69,17 @@ public class InterfaceConsola {
             System.out.print("\nCoordenada de fin: ");
             Punto2D p2 = this.pedirCoordenada();
 
-            if (!(p1.getFila() == p2.getFila() ^ p1.getCol() == p2.getCol())
-            || (p1.dist(p2) != hlf.getTamañoBarco(estado))) {
+            if ((p1.fila() == p2.fila()) == (p1.col() == p2.col())
+                    || (p1.dist(p2) != hlf.getTamanhoBarco(estado))) {
                 System.out.println("¡ERROR!: Coordenadas no validas");
                 System.out.print("Debes colocar tu barco en una fila o columna");
                 System.out.print(", nunca en diagonal");
                 System.out.println(", y respetando el tamaño del barco.");
-                continue bucleColocarBarcosJugador;
             } else if (hlf.yaHayBarco(hlf.getTableroFlotaJugador(), p1, p2)) {
                 System.out.println("¡ERROR!: Ya hay un barco en esta posición");
-                continue bucleColocarBarcosJugador;
             } else {
                 hlf.colocarBarcoJugador(p1, p2, estado);
-                break bucleColocarBarcosJugador;
+                break;
             }
         }
     }
@@ -90,7 +91,6 @@ public class InterfaceConsola {
         System.out.print("\nQuieres cambiar el tablero? (S/N) ");
 
         char opc;
-        bucleCambiarTablero:
         while (true) {
             switch (opc = sc.next().trim().toUpperCase().charAt(0)) {
                 case 'S':
@@ -100,32 +100,31 @@ public class InterfaceConsola {
 
                 case 'N':
                     break;
-                
+
                 default:
                     System.out.println("\n\n\nLa opción [" + opc + "] no es válida");
                     System.out.println("\nQuieres cambiar el tablero? (S/N) ");
-                    continue bucleCambiarTablero;
+                    continue;
             }
-            break bucleCambiarTablero;
+            break;
         }
         sc.nextLine();
         System.out.println();
     }
 
-    void setFlotaMáquina() {
-        this.colocarBarcosMáquina(Estados.PORTAAVIONES);
-        this.colocarBarcosMáquina(Estados.SUBMARINO);
-        this.colocarBarcosMáquina(Estados.FRAGATA);
-        this.colocarBarcosMáquina(Estados.FRAGATA);
+    void setFlotaMaquina() {
+        this.colocarBarcosMaquina(Estados.PORTAAVIONES);
+        this.colocarBarcosMaquina(Estados.SUBMARINO);
+        this.colocarBarcosMaquina(Estados.FRAGATA);
+        this.colocarBarcosMaquina(Estados.FRAGATA);
     }
 
-    void colocarBarcosMáquina(Estados tipoBarco) {
-        bucleColocarBarcosMáquina:
+    void colocarBarcosMaquina(Estados tipoBarco) {
         while (true) {
             Punto2D p1, p2;
-            int cord1 = hlf.coordenadaAleatoria(hlf.TAMAÑO_TABLERO);
-            int cord2 = hlf.coordenadaAleatoria((hlf.TAMAÑO_TABLERO - hlf.getTamañoBarco(tipoBarco)));
-            int cord3 = cord2 + hlf.getTamañoBarco(tipoBarco) -1;
+            int cord1 = hlf.coordenadaAleatoria(hlf.TAMANHO_TABLERO);
+            int cord2 = hlf.coordenadaAleatoria((hlf.TAMANHO_TABLERO - hlf.getTamanhoBarco(tipoBarco)));
+            int cord3 = cord2 + hlf.getTamanhoBarco(tipoBarco) - 1;
 
             if (hlf.randomBool()) { // el barco se situa en una fila
                 p1 = hlf.nuevaCoordenada(cord1, cord2);
@@ -136,11 +135,9 @@ public class InterfaceConsola {
                 p2 = hlf.nuevaCoordenada(cord3, cord1);
             }
 
-            if (hlf.yaHayBarco(hlf.getTableroFlotaMáquina(), p1, p2)) {
-                continue bucleColocarBarcosMáquina;
-            } else {
-                hlf.colocarBarcoMáquina(p1, p2, tipoBarco);
-                break bucleColocarBarcosMáquina;
+            if (!hlf.yaHayBarco(hlf.getTableroFlotaMaquina(), p1, p2)) {
+                hlf.colocarBarcoMaquina(p1, p2, tipoBarco);
+                break;
             }
         }
     }
@@ -154,8 +151,8 @@ public class InterfaceConsola {
                 break;
             }
 
-            this.turnoMáquina();
-            if (hlf.ganaMáquina()){
+            this.turnoMaquina();
+            if (hlf.ganaMaquina()) {
                 hlf.sleep(2);
                 System.out.println("\n\n\n\n\nHas sido derrotado...");
                 break;
@@ -171,7 +168,7 @@ public class InterfaceConsola {
         hlf.sleep(0.5);
 
         this.mostrarTableros(hlf.getTableroFlotaJugador(), hlf.getTableroDisparosJugador());
-        
+
         hlf.sleep(0.5);
         System.out.println("\nIndica una cordenada [A-G][1-7] para disparar un torpedo.");
 
@@ -226,7 +223,7 @@ public class InterfaceConsola {
         }
     }
 
-    void turnoMáquina() {
+    void turnoMaquina() {
         hlf.sleep(1.5);
         System.out.println("\n\n[TURNO DE LA MÁQUINA]");
         System.out.println("=====================\n");
@@ -236,24 +233,31 @@ public class InterfaceConsola {
         Punto2D p;
 
         bucleCoordenada:
-        while(true) {
+        while (true) {
             p = hlf.coordenadaAleatoria();
-            switch (hlf.getTableroDisparosMáquina()[p.getFila()][p.getCol()]) {
-                case VACIO: case AGUA: case PORTAAVIONES: case SUBMARINO: case FRAGATA:
+            switch (hlf.getTableroDisparosMaquina()[p.fila()][p.col()]) {
+                case VACIO:
+                case AGUA:
+                case PORTAAVIONES:
+                case SUBMARINO:
+                case FRAGATA:
                     break bucleCoordenada;
-            
-                case AGUA_IMP: case PORTAAVIONES_IMP: case SUBMARINO_IMP: case FRAGATA_IMP:
+
+                case AGUA_IMP:
+                case PORTAAVIONES_IMP:
+                case SUBMARINO_IMP:
+                case FRAGATA_IMP:
                     break;
             }
         }
 
-        Estados disparoMáquina = hlf.máquinaDisparaTorpedo(p);
+        Estados disparoMaquina = hlf.maquinaDisparaTorpedo(p);
 
         System.out.println("La máquina dispara en " + p);
 
         hlf.sleep(1);
-        
-        switch (disparoMáquina) {
+
+        switch (disparoMaquina) {
             case AGUA:
                 System.out.println("La máquina ha fallado");
                 break;
@@ -281,8 +285,8 @@ public class InterfaceConsola {
         System.out.println("Se han realizado " + hlf.getTotalDisparos() + " disparos.");
         System.out.print("Has acertado " + hlf.getContadorAciertosJugador() + " disparos de los ");
         System.out.println(hlf.getDisparosJugador() + " que has realizados.");
-        System.out.print("La máquina ha disparado " + hlf.getDisparosMáquina());
-        System.out.println(" veces, de las cuales ha acertado " + hlf.getContadorAciertosMáquina() + ".\n");
+        System.out.print("La máquina ha disparado " + hlf.getDisparosMaquina());
+        System.out.println(" veces, de las cuales ha acertado " + hlf.getContadorAciertosMaquina() + ".\n");
         hlf.sleep(1);
         System.out.println("\nAsí han quedado los tableros.\n");
         hlf.sleep(0.5);
@@ -290,14 +294,14 @@ public class InterfaceConsola {
         this.mostrarTableros(hlf.getTableroFlotaJugador(), hlf.getTableroDisparosJugador());
         hlf.sleep(0.5);
         System.out.println("\n\nTableros de la máquina");
-        this.mostrarTableros(hlf.getTableroFlotaMáquina(), hlf.getTableroDisparosMáquina());
+        this.mostrarTableros(hlf.getTableroFlotaMaquina(), hlf.getTableroDisparosMaquina());
     }
-    
+
     void mostrarTablero(Estados[][] tablero) {
         System.out.println("    1   2   3   4   5   6   7");
         System.out.println("  ┌───┬───┬───┬───┬───┬───┬───┐");
         for (int i = 0; i < tablero.length; i++) {
-            System.out.print((char)('A' + i) + " │");
+            System.out.print((char) ('A' + i) + " │");
             for (int j = 0; j < tablero[i].length; j++) {
                 switch (tablero[i][j]) {
                     case VACIO:
@@ -330,7 +334,7 @@ public class InterfaceConsola {
                 }
             }
             System.out.println();
-            if (i != hlf.TAMAÑO_TABLERO - 1) {
+            if (i != hlf.TAMANHO_TABLERO - 1) {
                 System.out.println("  ├───┼───┼───┼───┼───┼───┼───┤");
             }
         }
@@ -338,11 +342,11 @@ public class InterfaceConsola {
     }
 
     void mostrarTableros(Estados[][] tableroFlota, Estados[][] tableroDisparos) {
-        System.out.println("[TABLERO DE FLOTA]" +"\t\t" + "        [TABLERO DE DISPAROS]");
+        System.out.println("[TABLERO DE FLOTA]" + "\t\t" + "        [TABLERO DE DISPAROS]");
         System.out.println("    1   2   3   4   5   6   7" + "\t\t" + "    1   2   3   4   5   6   7");
         System.out.println("  ┌───┬───┬───┬───┬───┬───┬───┐" + "\t\t" + "  ┌───┬───┬───┬───┬───┬───┬───┐");
-        for (int i = 0; i < hlf.TAMAÑO_TABLERO; i++) {
-            System.out.print((char)('A' + i) + " │");
+        for (int i = 0; i < hlf.TAMANHO_TABLERO; i++) {
+            System.out.print((char) ('A' + i) + " │");
             for (int j = 0; j < tableroFlota[i].length; j++) {
                 switch (tableroFlota[i][j]) {
                     case VACIO:
@@ -376,7 +380,7 @@ public class InterfaceConsola {
             }
 
             System.out.print("\t\t");
-            System.out.print((char)('A' + i) + " │");
+            System.out.print((char) ('A' + i) + " │");
             for (int j = 0; j < tableroDisparos[i].length; j++) {
                 switch (tableroDisparos[i][j]) {
                     case VACIO:
@@ -410,7 +414,7 @@ public class InterfaceConsola {
             }
 
             System.out.println();
-            if (i != hlf.TAMAÑO_TABLERO - 1) {
+            if (i != hlf.TAMANHO_TABLERO - 1) {
                 System.out.print("  ├───┼───┼───┼───┼───┼───┼───┤");
                 System.out.print("\t\t");
                 System.out.println("  ├───┼───┼───┼───┼───┼───┼───┤");
@@ -429,9 +433,5 @@ public class InterfaceConsola {
         }
         sc.nextLine();
         return hlf.nuevaCoordenada(cord);
-    }
-
-    public static void main(String[] args) throws Exception {
-        new InterfaceConsola();
     }
 }

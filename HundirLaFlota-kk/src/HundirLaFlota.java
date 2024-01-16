@@ -1,74 +1,68 @@
-import java.util.Random;
+import assets.Estados;
+import assets.Punto2D;
 
-import assets.*;
+import java.util.Arrays;
+import java.util.Random;
 
 public class HundirLaFlota {
 
-    Random rn = new Random();
-
-    final int TAMAÑO_TABLERO;
+    final int TAMANHO_TABLERO;
     final int NUMERO_BARCOS;
     final int TOTAL_OBJETIVOS;
-
+    private final Estados[][] tableroFlotaMaquina;
+    // Tablero de los disparos que haces sobre el tablero del otro jugador
+    private final Estados[][] tableroDisparosJugador;
+    private final Estados[][] tableroDisparosMaquina;
+    Random rn = new Random();
     // Tablero de tus barcos
     private Estados[][] tableroFlotaJugador;
-    private Estados[][] tableroFlotaMáquina;
-
-    // Tablero de los disparos que haces sobre el tablero del otro jugador
-    private Estados[][] tableroDisparosJugador;
-    private Estados[][] tableroDisparosMáquina;
-
     private int contadorAciertosJugador;
-    private int contadorAciertosMáquina;
+    private int contadorAciertosMaquina;
 
     private int totalDisparos;
     private int disparosJugador;
-    private int disparosMáquina;
+    private int disparosMaquina;
 
     HundirLaFlota() {
-        this.TAMAÑO_TABLERO = 7;
+        this.TAMANHO_TABLERO = 7;
         this.NUMERO_BARCOS = 4;
         this.TOTAL_OBJETIVOS = 12;
 
-        this.tableroFlotaJugador = new Estados[TAMAÑO_TABLERO][TAMAÑO_TABLERO];
-        this.tableroDisparosJugador = new Estados[TAMAÑO_TABLERO][TAMAÑO_TABLERO];
+        this.tableroFlotaJugador = new Estados[TAMANHO_TABLERO][TAMANHO_TABLERO];
+        this.tableroDisparosJugador = new Estados[TAMANHO_TABLERO][TAMANHO_TABLERO];
         this.contadorAciertosJugador = 0;
 
-        this.tableroFlotaMáquina = new Estados[TAMAÑO_TABLERO][TAMAÑO_TABLERO];
-        this.tableroDisparosMáquina = new Estados[TAMAÑO_TABLERO][TAMAÑO_TABLERO];
-        this.contadorAciertosMáquina = 0;
+        this.tableroFlotaMaquina = new Estados[TAMANHO_TABLERO][TAMANHO_TABLERO];
+        this.tableroDisparosMaquina = new Estados[TAMANHO_TABLERO][TAMANHO_TABLERO];
+        this.contadorAciertosMaquina = 0;
 
         this.totalDisparos = 0;
         this.disparosJugador = 0;
-        this.disparosMáquina = 0;
+        this.disparosMaquina = 0;
 
         this.inicializarTablero(this.tableroFlotaJugador);
         this.inicializarTablero(this.tableroDisparosJugador);
-        this.inicializarTablero(this.tableroFlotaMáquina);
-        this.inicializarTablero(this.tableroDisparosMáquina);
+        this.inicializarTablero(this.tableroFlotaMaquina);
+        this.inicializarTablero(this.tableroDisparosMaquina);
     }
 
     // GETTER
     Estados[][] getTableroFlotaJugador() { // cumple el principio de ocultacion
-        Estados[][] temp = new Estados[TAMAÑO_TABLERO][TAMAÑO_TABLERO];
+        Estados[][] temp = new Estados[TAMANHO_TABLERO][TAMANHO_TABLERO];
 
-        for (int i = 0; i < TAMAÑO_TABLERO; i++) {
-            for (int j = 0; j < TAMAÑO_TABLERO; j++) {
-                temp[i][j] = tableroFlotaJugador[i][j];
-            }
+        for (int i = 0; i < TAMANHO_TABLERO; i++) {
+            System.arraycopy(tableroFlotaJugador[i], 0, temp[i], 0, TAMANHO_TABLERO);
         }
 
         return temp;
     }
 
     // GETTER
-    Estados[][] getTableroFlotaMáquina() { // cumple el principio de ocultacion
-        Estados[][] temp = new Estados[TAMAÑO_TABLERO][TAMAÑO_TABLERO];
+    Estados[][] getTableroFlotaMaquina() { // cumple el principio de ocultacion
+        Estados[][] temp = new Estados[TAMANHO_TABLERO][TAMANHO_TABLERO];
 
-        for (int i = 0; i < TAMAÑO_TABLERO; i++) {
-            for (int j = 0; j < TAMAÑO_TABLERO; j++) {
-                temp[i][j] = tableroFlotaMáquina[i][j];
-            }
+        for (int i = 0; i < TAMANHO_TABLERO; i++) {
+            System.arraycopy(tableroFlotaMaquina[i], 0, temp[i], 0, TAMANHO_TABLERO);
         }
 
         return temp;
@@ -76,26 +70,23 @@ public class HundirLaFlota {
 
     // GETTER
     Estados[][] getTableroDisparosJugador() { // cumple el principio de ocultación
-        Estados[][] temp = new Estados[TAMAÑO_TABLERO][TAMAÑO_TABLERO];
+        Estados[][] temp = new Estados[TAMANHO_TABLERO][TAMANHO_TABLERO];
 
-        for (int i = 0; i < TAMAÑO_TABLERO; i++) {
-            for (int j = 0; j < TAMAÑO_TABLERO; j++) {
-                temp[i][j] = tableroDisparosJugador[i][j];
-            }
+        for (int i = 0; i < TAMANHO_TABLERO; i++) {
+            System.arraycopy(tableroDisparosJugador[i], 0, temp[i], 0, TAMANHO_TABLERO);
         }
 
         return temp;
     }
 
     // GETTER
-    Estados[][] getTableroDisparosMáquina() { // cumple el principio de ocultación
-        Estados[][] temp = new Estados[TAMAÑO_TABLERO][TAMAÑO_TABLERO];
+    Estados[][] getTableroDisparosMaquina() { // cumple el principio de ocultación
+        Estados[][] temp = new Estados[TAMANHO_TABLERO][TAMANHO_TABLERO];
 
-        for (int i = 0; i < TAMAÑO_TABLERO; i++) {
-            for (int j = 0; j < TAMAÑO_TABLERO; j++) {
-                temp[i][j] = tableroDisparosMáquina[i][j];
-            }
+        for (int i = 0; i < TAMANHO_TABLERO; i++) {
+            System.arraycopy(tableroDisparosMaquina[i], 0, temp[i], 0, TAMANHO_TABLERO);
         }
+
         return temp;
     }
 
@@ -105,8 +96,8 @@ public class HundirLaFlota {
     }
 
     // GETTER
-    int getContadorAciertosMáquina() {
-        return contadorAciertosMáquina;
+    int getContadorAciertosMaquina() {
+        return contadorAciertosMaquina;
     }
 
     // GETTER
@@ -120,15 +111,13 @@ public class HundirLaFlota {
     }
 
     // GETTER
-    int getDisparosMáquina() {
-        return disparosMáquina;
+    int getDisparosMaquina() {
+        return disparosMaquina;
     }
 
     private void inicializarTablero(Estados[][] tablero) {
-        for (int i = 0; i < tablero.length; i++) {
-            for (int j = 0; j < tablero[i].length; j++) {
-                tablero[i][j] = Estados.VACIO;
-            }
+        for (Estados[] estados : tablero) {
+            Arrays.fill(estados, Estados.VACIO);
         }
     }
 
@@ -148,22 +137,17 @@ public class HundirLaFlota {
     }
 
     Punto2D coordenadaAleatoria() {
-        return new Punto2D(rn.nextInt(this.TAMAÑO_TABLERO), rn.nextInt(this.TAMAÑO_TABLERO));
+        return new Punto2D(rn.nextInt(this.TAMANHO_TABLERO), rn.nextInt(this.TAMANHO_TABLERO));
     }
 
     // Comprueba que el formato sea correcto ([A-G][1-7])
     boolean coordenadaCorrecta(String cord) {
-        if ((cord.length() == 2)
-                && (cord.charAt(0) >= 'A' && cord.charAt(0) <= 'G')
-                && (cord.charAt(1) >= '1' && cord.charAt(1) <= '7')) {
-            return true;
-        }
-        return false;
+        return cord.length() == 2 && (cord.charAt(0) >= 'A' && cord.charAt(0) <= 'G') && (cord.charAt(1) >= '1' && cord.charAt(1) <= '7');
     }
 
     // Resetea el tablero
     void resetTableroFlotaJugador() {
-        this.tableroFlotaJugador = new Estados[TAMAÑO_TABLERO][TAMAÑO_TABLERO];
+        this.tableroFlotaJugador = new Estados[TAMANHO_TABLERO][TAMANHO_TABLERO];
     }
 
     // Un boolean aleatorio, en este caso sirve para indicar si un barco se situa en
@@ -181,22 +165,22 @@ public class HundirLaFlota {
         }
     }
 
-    // Comprueba si la posición donde se quiere colocar un barco ya está ocupada por
+    // Comprueba si la posición donde se quiere colocar un barco ya esta ocupada por
     // otro
     boolean yaHayBarco(Estados[][] tableroFlota, Punto2D p1, Punto2D p2) {
-        if (p1.getFila() == p2.getFila()) { // Si las posiciones en columna son del tipo:
-            for (int j = Math.min(p1.getCol(), p2.getCol()); j < Math.max(p1.getCol(), p2.getCol()) + 1; j++) {
-                if (tableroFlota[p1.getFila()][j] == Estados.PORTAAVIONES
-                        || tableroFlota[p1.getFila()][j] == Estados.SUBMARINO
-                        || tableroFlota[p1.getFila()][j] == Estados.FRAGATA) {
+        if (p1.fila() == p2.fila()) { // Si las posiciones en columna son del tipo:
+            for (int j = Math.min(p1.col(), p2.col()); j < Math.max(p1.col(), p2.col()) + 1; j++) {
+                if (tableroFlota[p1.fila()][j] == Estados.PORTAAVIONES
+                        || tableroFlota[p1.fila()][j] == Estados.SUBMARINO
+                        || tableroFlota[p1.fila()][j] == Estados.FRAGATA) {
                     return true; // Se devuelve que ya hay barco
                 }
             }
         } else { // Si las posiciones en fila son del tipo:
-            for (int i = Math.min(p1.getFila(), p2.getFila()); i < Math.max(p1.getFila(), p2.getFila()) + 1; i++) {
-                if (tableroFlota[i][p1.getCol()] == Estados.PORTAAVIONES
-                        || tableroFlota[i][p1.getCol()] == Estados.SUBMARINO
-                        || tableroFlota[i][p1.getCol()] == Estados.FRAGATA) {
+            for (int i = Math.min(p1.fila(), p2.fila()); i < Math.max(p1.fila(), p2.fila()) + 1; i++) {
+                if (tableroFlota[i][p1.col()] == Estados.PORTAAVIONES
+                        || tableroFlota[i][p1.col()] == Estados.SUBMARINO
+                        || tableroFlota[i][p1.col()] == Estados.FRAGATA) {
                     return true; // Se devuelve que ya hay barco
                 }
             }
@@ -207,26 +191,26 @@ public class HundirLaFlota {
     // Si cumple con todos los requisitos se "coloca" el barco en el tablero de
     // flota del jugador
     void colocarBarcoJugador(Punto2D p1, Punto2D p2, Estados estado) {
-        if (p1.getFila() == p2.getFila()) {
-            for (int i = Math.min(p1.getCol(), p2.getCol()); i < Math.max(p1.getCol(), p2.getCol()) + 1; i++) {
-                this.tableroFlotaJugador[p1.getFila()][i] = estado;
+        if (p1.fila() == p2.fila()) {
+            for (int i = Math.min(p1.col(), p2.col()); i < Math.max(p1.col(), p2.col()) + 1; i++) {
+                this.tableroFlotaJugador[p1.fila()][i] = estado;
             }
         } else {
-            for (int i = Math.min(p1.getFila(), p2.getFila()); i < Math.max(p1.getFila(), p2.getFila()) + 1; i++) {
-                this.tableroFlotaJugador[i][p1.getCol()] = estado;
+            for (int i = Math.min(p1.fila(), p2.fila()); i < Math.max(p1.fila(), p2.fila()) + 1; i++) {
+                this.tableroFlotaJugador[i][p1.col()] = estado;
             }
         }
     }
 
-    // Lo mismo que el anterior pero para los barcos de la máquina
-    void colocarBarcoMáquina(Punto2D p1, Punto2D p2, Estados tipoBarco) {
-        if (p1.getFila() == p2.getFila()) {
-            for (int j = Math.min(p1.getCol(), p2.getCol()); j < Math.max(p1.getCol(), p2.getCol()) + 1; j++) {
-                this.tableroFlotaMáquina[p1.getFila()][j] = tipoBarco;
+    // Lo mismo que el anterior pero para los barcos de la maquina
+    void colocarBarcoMaquina(Punto2D p1, Punto2D p2, Estados tipoBarco) {
+        if (p1.fila() == p2.fila()) {
+            for (int j = Math.min(p1.col(), p2.col()); j < Math.max(p1.col(), p2.col()) + 1; j++) {
+                this.tableroFlotaMaquina[p1.fila()][j] = tipoBarco;
             }
         } else {
-            for (int i = Math.min(p1.getFila(), p2.getFila()); i < Math.max(p1.getFila(), p2.getFila()) + 1; i++) {
-                this.tableroFlotaMáquina[i][p1.getCol()] = tipoBarco;
+            for (int i = Math.min(p1.fila(), p2.fila()); i < Math.max(p1.fila(), p2.fila()) + 1; i++) {
+                this.tableroFlotaMaquina[i][p1.col()] = tipoBarco;
             }
         }
     }
@@ -237,32 +221,32 @@ public class HundirLaFlota {
     Estados jugadorDisparaTorpedo(Punto2D p) {
         this.totalDisparos++;
         this.disparosJugador++;
-        switch (this.tableroDisparosJugador[p.getFila()][p.getCol()]) {
+        switch (this.tableroDisparosJugador[p.fila()][p.col()]) {
             case VACIO:
             case AGUA:
             case PORTAAVIONES:
             case SUBMARINO:
             case FRAGATA:
-                switch (this.tableroFlotaMáquina[p.getFila()][p.getCol()]) {
+                switch (this.tableroFlotaMaquina[p.fila()][p.col()]) {
                     case VACIO:
                     case AGUA:
-                        this.tableroFlotaMáquina[p.getFila()][p.getCol()] = Estados.AGUA_IMP;
-                        this.tableroDisparosJugador[p.getFila()][p.getCol()] = Estados.AGUA_IMP;
+                        this.tableroFlotaMaquina[p.fila()][p.col()] = Estados.AGUA_IMP;
+                        this.tableroDisparosJugador[p.fila()][p.col()] = Estados.AGUA_IMP;
                         return Estados.AGUA;
                     case PORTAAVIONES:
                         this.contadorAciertosJugador++;
-                        this.tableroFlotaMáquina[p.getFila()][p.getCol()] = Estados.PORTAAVIONES_IMP;
-                        this.tableroDisparosJugador[p.getFila()][p.getCol()] = Estados.PORTAAVIONES_IMP;
+                        this.tableroFlotaMaquina[p.fila()][p.col()] = Estados.PORTAAVIONES_IMP;
+                        this.tableroDisparosJugador[p.fila()][p.col()] = Estados.PORTAAVIONES_IMP;
                         return Estados.PORTAAVIONES;
                     case SUBMARINO:
                         this.contadorAciertosJugador++;
-                        this.tableroFlotaMáquina[p.getFila()][p.getCol()] = Estados.SUBMARINO_IMP;
-                        this.tableroDisparosJugador[p.getFila()][p.getCol()] = Estados.SUBMARINO_IMP;
+                        this.tableroFlotaMaquina[p.fila()][p.col()] = Estados.SUBMARINO_IMP;
+                        this.tableroDisparosJugador[p.fila()][p.col()] = Estados.SUBMARINO_IMP;
                         return Estados.SUBMARINO;
                     case FRAGATA:
                         this.contadorAciertosJugador++;
-                        this.tableroFlotaMáquina[p.getFila()][p.getCol()] = Estados.FRAGATA_IMP;
-                        this.tableroDisparosJugador[p.getFila()][p.getCol()] = Estados.FRAGATA_IMP;
+                        this.tableroFlotaMaquina[p.fila()][p.col()] = Estados.FRAGATA_IMP;
+                        this.tableroDisparosJugador[p.fila()][p.col()] = Estados.FRAGATA_IMP;
                         return Estados.FRAGATA;
                     default:
                         return null;
@@ -285,30 +269,30 @@ public class HundirLaFlota {
         }
     }
 
-    // Lo mismo para la máquina.
-    Estados máquinaDisparaTorpedo(Punto2D p) {
+    // Lo mismo para la maquina.
+    Estados maquinaDisparaTorpedo(Punto2D p) {
         this.totalDisparos++;
-        this.disparosMáquina++;
-        switch (this.tableroFlotaJugador[p.getFila()][p.getCol()]) {
+        this.disparosMaquina++;
+        switch (this.tableroFlotaJugador[p.fila()][p.col()]) {
             case VACIO:
             case AGUA:
-                this.tableroFlotaJugador[p.getFila()][p.getCol()] = Estados.AGUA;
-                this.tableroDisparosMáquina[p.getFila()][p.getCol()] = Estados.AGUA_IMP;
+                this.tableroFlotaJugador[p.fila()][p.col()] = Estados.AGUA;
+                this.tableroDisparosMaquina[p.fila()][p.col()] = Estados.AGUA_IMP;
                 return Estados.AGUA;
             case PORTAAVIONES:
-                this.tableroFlotaJugador[p.getFila()][p.getCol()] = Estados.PORTAAVIONES_IMP;
-                this.tableroDisparosMáquina[p.getFila()][p.getCol()] = Estados.PORTAAVIONES_IMP;
-                this.contadorAciertosMáquina++;
+                this.tableroFlotaJugador[p.fila()][p.col()] = Estados.PORTAAVIONES_IMP;
+                this.tableroDisparosMaquina[p.fila()][p.col()] = Estados.PORTAAVIONES_IMP;
+                this.contadorAciertosMaquina++;
                 return Estados.PORTAAVIONES;
             case SUBMARINO:
-                this.tableroFlotaJugador[p.getFila()][p.getCol()] = Estados.SUBMARINO_IMP;
-                this.tableroDisparosMáquina[p.getFila()][p.getCol()] = Estados.SUBMARINO_IMP;
-                this.contadorAciertosMáquina++;
+                this.tableroFlotaJugador[p.fila()][p.col()] = Estados.SUBMARINO_IMP;
+                this.tableroDisparosMaquina[p.fila()][p.col()] = Estados.SUBMARINO_IMP;
+                this.contadorAciertosMaquina++;
                 return Estados.SUBMARINO;
             case FRAGATA:
-                this.tableroFlotaJugador[p.getFila()][p.getCol()] = Estados.FRAGATA_IMP;
-                this.tableroDisparosMáquina[p.getFila()][p.getCol()] = Estados.FRAGATA_IMP;
-                this.contadorAciertosMáquina++;
+                this.tableroFlotaJugador[p.fila()][p.col()] = Estados.FRAGATA_IMP;
+                this.tableroDisparosMaquina[p.fila()][p.col()] = Estados.FRAGATA_IMP;
+                this.contadorAciertosMaquina++;
                 return Estados.FRAGATA;
             default:
                 return null;
@@ -316,36 +300,28 @@ public class HundirLaFlota {
     }
 
     boolean ganaJugador() {
-        return (this.contadorAciertosJugador == TOTAL_OBJETIVOS ? true : false);
+        return this.contadorAciertosJugador == TOTAL_OBJETIVOS;
     }
 
-    boolean ganaMáquina() {
-        return (this.contadorAciertosMáquina == TOTAL_OBJETIVOS ? true : false);
+    boolean ganaMaquina() {
+        return this.contadorAciertosMaquina == TOTAL_OBJETIVOS;
     }
 
     String getNombreBarco(Estados estado) {
-        switch (estado) {
-            case PORTAAVIONES:
-                return "portaaviones";
-            case SUBMARINO:
-                return "submarino";
-            case FRAGATA:
-                return "fragata";
-            default:
-                return null;
-        }
+        return switch (estado) {
+            case PORTAAVIONES -> "portaaviones";
+            case SUBMARINO -> "submarino";
+            case FRAGATA -> "fragata";
+            default -> null;
+        };
     }
 
-    int getTamañoBarco(Estados estado) {
-        switch (estado) {
-            case PORTAAVIONES:
-                return 5;
-            case SUBMARINO:
-                return 3;
-            case FRAGATA:
-                return 2;
-            default:
-                return 0;
-        }
+    int getTamanhoBarco(Estados estado) {
+        return switch (estado) {
+            case PORTAAVIONES -> 5;
+            case SUBMARINO -> 3;
+            case FRAGATA -> 2;
+            default -> 0;
+        };
     }
 }
