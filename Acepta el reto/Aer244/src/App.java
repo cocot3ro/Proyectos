@@ -13,6 +13,10 @@ public class App {
                 int currCol = sc.nextInt() - 1;
                 if (tablero[currRow][currCol]) {
                     System.out.println("SI");
+                    for (int j = i + 1; j < queens; j++) {
+                        sc.nextInt();
+                        sc.nextInt();
+                    }
                     continue testcase;
                 } else {
                     for (int j = 0; j < tablero.length; j++) {
