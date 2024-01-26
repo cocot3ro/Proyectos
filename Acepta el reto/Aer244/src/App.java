@@ -6,31 +6,27 @@ public class App {
 
         testcase:
         for (int n = sc.nextInt(), queens = sc.nextInt(); n != 0 || queens != 0; n = sc.nextInt(), queens = sc.nextInt()) {
-            boolean[][] tablero = new boolean[n][n];
+            boolean[] filas = new boolean[n];
+            boolean[] columnas = new boolean[n];
+            boolean[][] diagonales = new boolean[2][n * 2 - 1];
 
             for (int i = 0; i < queens; i++) {
-                int currRow = sc.nextInt() - 1;
-                int currCol = sc.nextInt() - 1;
-                if (tablero[currRow][currCol]) {
+                int fila = sc.nextInt() - 1;
+                int columna = sc.nextInt() - 1;
+
+                if (filas[fila] || columnas[columna] || diagonales[0][fila + columna] || diagonales[1][fila - columna + n - 1]) {
                     System.out.println("SI");
                     for (int j = i + 1; j < queens; j++) {
                         sc.nextInt();
                         sc.nextInt();
                     }
                     continue testcase;
-                } else {
-                    for (int j = 0; j < tablero.length; j++) {
-                        tablero[j][currCol] = true;
-                        tablero[currRow][j] = true;
-                    }
-                    for (int j = -1; j <= 1; j += 2) {
-                        for (int k = -1; k <= 1; k += 2) {
-                            for (int x = currRow + j, y = currCol + k; x >= 0 && x < tablero.length && y >= 0 && y < tablero.length; x += j, y += k) {
-                                tablero[x][y] = true;
-                            }
-                        }
-                    }
                 }
+
+                filas[fila] = true;
+                columnas[columna] = true;
+                diagonales[0][fila + columna] = true;
+                diagonales[1][fila - columna + n - 1] = true;
             }
             System.out.println("NO");
         }
