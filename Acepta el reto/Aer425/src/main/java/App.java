@@ -6,36 +6,26 @@ public class App {
 
         while (sc.hasNext()) {
             String palabra = sc.nextLine();
-
-            if (esPalindromo(palabra)) {
-                System.out.println(0);
-                continue;
-            }
-
-            int[] letras = new int[255];
-            int impares = 0;
-
-            for (char c : palabra.toCharArray()) {
-                letras[c]++;
-                impares -= 1 - (letras[c] % 2) * 2;
-            }
-
-            if (impares == 0) {
-                System.out.println(1);
-                continue;
-            }
-
-            System.out.println(impares - 1);
+            System.out.println(letrasParaPalindromo(palabra));
         }
     }
 
-    private static boolean esPalindromo(String s) {
-        for (int i = 0; i < s.length() / 2; i++) {
-            if (s.charAt(i) != (s.charAt(s.length() - i - 1))) {
-                return false;
+    public static int letrasParaPalindromo(String palabra) {
+        int n = palabra.length();
+        int[][] dp = new int[n][n];
+
+        // Llenar la tabla dp
+        for (int len = 2; len <= n; len++) {
+            for (int i = 0; i <= n - len; i++) {
+                int j = i + len - 1;
+                if (palabra.charAt(i) == palabra.charAt(j)) {
+                    dp[i][j] = dp[i + 1][j - 1];
+                } else {
+                    dp[i][j] = Math.min(dp[i + 1][j], dp[i][j - 1]) + 1;
+                }
             }
         }
 
-        return true;
+        return dp[0][n - 1];
     }
 }
