@@ -25,11 +25,12 @@ public class App {
                 if (entry.getValue() > max) {
                     max = entry.getValue();
                     winner = entry.getKey();
+                } else if (entry.getValue() == max) {
+                    winner = "EMPATE";
                 }
             }
 
-
-
+            System.out.println(winner);
         }
     }
 }
