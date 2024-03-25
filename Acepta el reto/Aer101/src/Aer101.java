@@ -88,60 +88,39 @@ public class Aer101 {
             return false;
         }
 
-        return (n % 2 == 0 ? esEsotericoPar(matrix) : esEsotericoImpar(matrix));
-    }
-
-    private static boolean esEsotericoImpar(int[][] matrix) {
-        int n = matrix.length;
-
         final int CM = getCM(matrix);
         final int CM2 = 4 * CM / n;
 
-        int esquinas = matrix[0][0] +
-                matrix[0][n - 1] +
-                matrix[n - 1][0] +
-                matrix[n - 1][n - 1];
+        int esquinas = matrix[0][0] + matrix[0][n - 1] + matrix[n - 1][0] + matrix[n - 1][n - 1];
+
         if (esquinas != CM2) {
             return false;
         }
 
-        int bordes = matrix[0][n / 2] +
-                matrix[n / 2][0] +
-                matrix[n / 2][n - 1] +
-                matrix[n - 1][n / 2];
-        if (bordes != CM2) {
-            return false;
+        if (n % 2 == 0) {
+            int bordes = matrix[0][n / 2 - 1] + matrix[0][n / 2] +
+                    matrix[n / 2 - 1][0] + matrix[n / 2][n - 1] +
+                    matrix[n / 2][0] + matrix[n / 2 - 1][n - 1] +
+                    matrix[n - 1][n / 2 - 1] + matrix[n - 1][n / 2];
+            if (bordes != 2 * CM2) {
+                return false;
+            }
+
+            int centro = matrix[n / 2 - 1][n / 2 - 1] + matrix[n / 2 - 1][n / 2] +
+                    matrix[n / 2][n / 2 - 1] + matrix[n / 2][n / 2];
+
+            return centro == CM2;
+        } else {
+            int bordes = matrix[0][n / 2] +
+                    matrix[n / 2][0] +
+                    matrix[n / 2][n - 1] +
+                    matrix[n - 1][n / 2];
+            if (bordes != CM2) {
+                return false;
+            }
+
+            return 4 * matrix[n / 2][n / 2] == CM2;
         }
-
-        return 4 * matrix[n / 2][n / 2] == CM2;
-    }
-
-    private static boolean esEsotericoPar(int[][] matrix) {
-        int n = matrix.length;
-
-        final int CM = getCM(matrix);
-        final int CM2 = 4 * CM / n;
-
-        int esquinas = matrix[0][0] +
-                matrix[0][n - 1] +
-                matrix[n - 1][0] +
-                matrix[n - 1][n - 1];
-        if (esquinas != CM2) {
-            return false;
-        }
-
-        int bordes = matrix[0][n / 2 - 1] + matrix[0][n / 2] +
-                matrix[n / 2 - 1][0] + matrix[n / 2][n - 1] +
-                matrix[n / 2][0] + matrix[n / 2 - 1][n - 1] +
-                matrix[n - 1][n / 2 - 1] + matrix[n - 1][n / 2];
-        if (bordes != 2 * CM2) {
-            return false;
-        }
-
-        int centro = matrix[n / 2 - 1][n / 2 - 1] + matrix[n / 2 - 1][n / 2] +
-                matrix[n / 2][n / 2 - 1] + matrix[n / 2][n / 2];
-
-        return centro == CM2;
     }
 
 }
