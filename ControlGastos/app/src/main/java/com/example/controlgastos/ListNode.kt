@@ -1,5 +1,6 @@
 package com.example.controlgastos
 
-interface ListNode {
-    fun getAmount(): Double
+abstract class ListNode(open val name: String, val type: ListNodeType) {
+
+    abstract fun getTotal(): Double
 }
