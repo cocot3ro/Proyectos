@@ -1,4 +1,4 @@
-package com.example.CocTracker;
+package com.example.CocTracker.view;
 
 import javafx.stage.Stage;
 import org.springframework.context.ApplicationEvent;

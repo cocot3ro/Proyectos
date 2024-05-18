@@ -1,4 +1,4 @@
-package com.example.CocTracker;
+package com.example.CocTracker.view;
 
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
